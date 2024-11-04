@@ -7,7 +7,7 @@ class ConnectionsList(QWidget):
         super().__init__()
 
         self.listWidget = QListWidget(self)
-
+        self.listWidget.itemDoubleClicked.connect(self.handle_item_double_clicked)
         self.listWidget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
         self.layout = QVBoxLayout(self)
@@ -24,3 +24,6 @@ class ConnectionsList(QWidget):
         self.listWidget.clear()
         for conn in os.listdir("connections"):
             self.listWidget.addItem(conn)
+
+    def handle_item_double_clicked(self, item):
+        print(item.text())
