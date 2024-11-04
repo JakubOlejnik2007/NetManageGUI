@@ -1,57 +1,48 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QTextEdit, QPushButton
+
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLineEdit, QTextEdit, QPushButton, QGridLayout, QWidget
 from PyQt6.QtCore import QProcess
 
+from CommandEditor import CommandEditor
+from CommandsList import CommandList
+from ConnectionsList import ConnectionsList
+from CurrentConnection import CurrentConnection
+from MenuBar import MenuBar
+from TerminalView import TerminalView
 
-class TerminalApp(QWidget):
+
+class NetManageGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
-        layout = QVBoxLayout()
+        menu_bar = MenuBar()
+        self.setMenuBar(menu_bar)
 
-        self.command_input = QLineEdit(self)
-        self.command_input.setPlaceholderText("Wpisz komendę...")
-        layout.addWidget(self.command_input)
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-        self.run_button = QPushButton("Uruchom", self)
-        layout.addWidget(self.run_button)
-        self.run_button.clicked.connect(self.run_command)
+        grid = QGridLayout(central_widget)
 
-        self.output_area = QTextEdit(self)
-        self.output_area.setReadOnly(True)
-        layout.addWidget(self.output_area)
+        terminal_view = TerminalView()
+        command_list = CommandList()
+        command_editor = CommandEditor()
+        current_connection = CurrentConnection()
+        connections_list = ConnectionsList()
 
-        self.process = QProcess(self)
-        self.process.readyReadStandardOutput.connect(self.read_stdout)
-        self.process.readyReadStandardError.connect(self.read_stderr)
+        grid.addWidget(command_list, 0, 0, 3, 1)
+        grid.addWidget(command_editor, 0, 1, 2, 2)
+        grid.addWidget(terminal_view, 2, 1, 1, 2)
+        grid.addWidget(current_connection, 0, 3, 1, 1)
+        grid.addWidget(connections_list, 1, 3, 2, 1)
 
-        self.setLayout(layout)
-        self.setWindowTitle("Terminal PyQt")
-        self.resize(600, 400)
-
-    def run_command(self):
-        command = self.command_input.text()
-        print(f"Command: {command}")  # Wyświetlenie komendy w konsoli
-        if command.strip():
-            self.output_area.append(f"> {command}")
-            self.process.start("cmd.exe", ["/c", command])
-
-    def read_stdout(self):
-        output = self.process.readAllStandardOutput().data().decode()
-        print(output)  # Wyświetlenie wyniku w konsoli
-        self.output_area.append(output)
-
-    def read_stderr(self):
-        error = self.process.readAllStandardError().data().decode()
-        print(error)  # Wyświetlenie błędów w konsoli
-        self.output_area.append(error)
-
+        self.setWindowTitle('NetManageGUI')
+        self.setGeometry(100, 100, 1000, 750)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = TerminalApp()
+    window = NetManageGUI()
     window.show()
     sys.exit(app.exec())
