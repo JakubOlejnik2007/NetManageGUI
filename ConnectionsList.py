@@ -1,25 +1,26 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
+import os
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QSizePolicy
 
 
 class ConnectionsList(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Ustawienie layoutu
-        self.layout = QVBoxLayout()
+        self.listWidget = QListWidget(self)
 
-        # Tworzenie etykiety
-        self.label = QLabel('Lista połączeń')
+        self.listWidget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+
+        self.layout = QVBoxLayout(self)
+        self.label = QLabel('Zapisane połączenia')
+
         self.layout.addWidget(self.label)
+        self.layout.addWidget(self.listWidget)
 
-        # Tworzenie przycisku
-        self.button = QPushButton('Kliknij mnie')
-        self.button.clicked.connect(self.change_text)  # Połączenie sygnału z metodą
-        self.layout.addWidget(self.button)
+        self.load_list()
 
-        # Ustawienie layoutu dla widgetu
         self.setLayout(self.layout)
 
-    def change_text(self):
-        # Zmiana tekstu etykiety
-        self.label.setText('Tekst został zmieniony!')
+    def load_list(self):
+        self.listWidget.clear()
+        for conn in os.listdir("connections"):
+            self.listWidget.addItem(conn)
