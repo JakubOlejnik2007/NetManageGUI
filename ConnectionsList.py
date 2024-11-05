@@ -8,7 +8,6 @@ class ConnectionsList(QWidget):
         self.setCurrConnection = setCurrConnection
 
         self.listWidget = QListWidget(self)
-        self.listWidget.itemClicked.connect(self.handle_item_clicked)
         self.listWidget.itemDoubleClicked.connect(self.handle_item_double_clicked)
         self.listWidget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
@@ -29,6 +28,3 @@ class ConnectionsList(QWidget):
 
     def handle_item_double_clicked(self, item):
         self.setCurrConnection(item.text())
-
-    def handle_item_clicked(self, item):
-        print(item.text())

@@ -12,21 +12,15 @@ class CurrentConnection(QWidget):
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel('Obecne połączenie')
-        self.layout.addWidget(self.label)
-
-        self.button = QPushButton('Kliknij mnie')
-        self.button.clicked.connect(self.change_text)
-        self.layout.addWidget(self.button)
-
         self.setLayout(self.layout)
 
-    def change_text(self):
-        self.label.setText('Tekst został zmieniony!')
-
     def update_connection(self, connection: COM_CONNECTION | SSHTEL_CONNECTION | TFTP_CONNECTION | None):
-        print(connection.getNetmikoConnDict())
         self.connection = connection
+        if self.connection is None:
+            self.clear_layout(self.layout)
+            return
+        print(connection.getNetmikoConnDict())
+
 
         print(self.connection.METHOD)
         if self.connection.METHOD == "COM":
@@ -45,6 +39,7 @@ class CurrentConnection(QWidget):
         self.showKeyValue("Port:", self.connection.PORT)
         self.showKeyValue("Username:", self.connection.USERNAME)
         self.showKeyValue("Device:", self.connection.DEVICE)
+        self.showKeyValue("EXEC:", "TAK" if self.connection.EXECPASS else "NIE")
 
     def showCOMConn(self):
         self.clear_layout(self.layout)
@@ -57,6 +52,7 @@ class CurrentConnection(QWidget):
         self.showKeyValue("Port:", self.connection.PORT)
         self.showKeyValue("Baudrate:", self.connection.BAUDRATE)
         self.showKeyValue("Device:", self.connection.DEVICE)
+        self.showKeyValue("EXEC:", "TAK" if self.connection.EXECPASS else "NIE")
 
 
 

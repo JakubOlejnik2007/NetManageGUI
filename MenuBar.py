@@ -1,8 +1,9 @@
+from NetManage.utils import SSHTEL_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
 class MenuBar(QMenuBar):
-    def __init__(self, reload_connections):
+    def __init__(self, reload_connections, close_connection):
         super().__init__()
 
         self.file_menu = self.addMenu('Plik')
@@ -22,3 +23,35 @@ class MenuBar(QMenuBar):
         refresh.triggered.connect(reload_connections)
 
         self.tools_menu.addAction(refresh)
+
+        self.connection_menu = self.addMenu('Połączenie')
+        self.new_connection = QAction('Nowe', self)
+
+        self.test_connection = QAction('Test', self)
+        self.test_connection.setEnabled(False)
+
+        self.edit_connection = QAction('Edycja', self)
+        self.edit_connection.setEnabled(False)
+
+        self.close_connection = QAction('Zamknij', self)
+        self.close_connection.setEnabled(False)
+        self.close_connection
+        self.close_connection.triggered.connect(close_connection)
+
+        self.delete_connection = QAction('Usuń', self)
+        self.delete_connection.setEnabled(False)
+
+        self.connection_menu.addAction(self.new_connection)
+        self.connection_menu.addAction(self.test_connection)
+        self.connection_menu.addAction(self.edit_connection)
+        self.connection_menu.addAction(self.close_connection)
+        self.connection_menu.addAction(self.delete_connection)
+
+    def toggleActionActivation(self, connection: SSHTEL_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None):
+        enabled = False
+        if connection is not None:
+            enabled = True
+        self.test_connection.setEnabled(enabled)
+        self.edit_connection.setEnabled(enabled)
+        self.close_connection.setEnabled(enabled)
+        self.delete_connection.setEnabled(enabled)
