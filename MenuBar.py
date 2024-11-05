@@ -3,7 +3,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
 class MenuBar(QMenuBar):
-    def __init__(self, reload_connections, close_connection):
+    def __init__(self, reload_connections, close_connection, delete_connection):
         super().__init__()
 
         self.file_menu = self.addMenu('Plik')
@@ -40,6 +40,8 @@ class MenuBar(QMenuBar):
 
         self.delete_connection = QAction('Usuń', self)
         self.delete_connection.setEnabled(False)
+        self.delete_connection.setShortcut("Ctrl+Del")
+        self.delete_connection.triggered.connect(delete_connection)
 
         self.connection_menu.addAction(self.new_connection)
         self.connection_menu.addAction(self.test_connection)
