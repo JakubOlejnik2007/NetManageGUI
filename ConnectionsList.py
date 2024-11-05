@@ -1,12 +1,14 @@
 import os
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QSizePolicy, QAbstractItemView
 
 
 class ConnectionsList(QWidget):
-    def __init__(self):
+    def __init__(self, setCurrConnection):
         super().__init__()
+        self.setCurrConnection = setCurrConnection
 
         self.listWidget = QListWidget(self)
+        self.listWidget.itemClicked.connect(self.handle_item_clicked)
         self.listWidget.itemDoubleClicked.connect(self.handle_item_double_clicked)
         self.listWidget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
@@ -26,4 +28,7 @@ class ConnectionsList(QWidget):
             self.listWidget.addItem(conn)
 
     def handle_item_double_clicked(self, item):
+        self.setCurrConnection(item.text())
+
+    def handle_item_clicked(self, item):
         print(item.text())
