@@ -1,7 +1,8 @@
 import sys
 
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLineEdit, QTextEdit, QPushButton, QGridLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLineEdit, QTextEdit, QPushButton, QGridLayout, \
+    QWidget, QMessageBox
 from PyQt6.QtCore import QProcess, pyqtSignal
 
 from CommandEditor import CommandEditor
@@ -20,6 +21,7 @@ sys.excepthook = exception_hook
 
 class NetManageGUI(QMainWindow):
     connection_changed = pyqtSignal(object)
+    central_widget = None
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -27,6 +29,7 @@ class NetManageGUI(QMainWindow):
         self.connection: SSHTEL_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
 
     def initUI(self):
+        self.central_widget = QWidget(self)
         terminal_view = TerminalView()
         command_list = CommandList()
         command_editor = CommandEditor()
@@ -36,10 +39,9 @@ class NetManageGUI(QMainWindow):
 
         menu_bar = MenuBar(connections_list.load_list, self.closeConnection)
         self.setMenuBar(menu_bar)
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(self.central_widget)
 
-        grid = QGridLayout(central_widget)
+        grid = QGridLayout(self.central_widget)
 
         self.connection_changed.connect(current_connection.update_connection)
         self.connection_changed.connect(menu_bar.toggleActionActivation)
@@ -56,6 +58,11 @@ class NetManageGUI(QMainWindow):
         self.setGeometry(100, 100, 1000, 750)
 
     def setConnection(self, connection_file):
+        if self.connection is not None:
+            change_conn = self.confirm_message_box("Zmiana połączenia", "Czy na pewno chcesz zmienić połączenie?")
+            if not change_conn:
+                return
+
         self.connectionFile = connection_file
         try:
             self.connection = read_nmconn(f"connections\\{connection_file}")
@@ -67,9 +74,32 @@ class NetManageGUI(QMainWindow):
             self.connectionFile = ""
 
     def closeConnection(self):
+
+        if not self.confirm_message_box("Zamknięcie połączenia", "Czy na pewno chcesz zamknąć połączenie?"):
+            return
+
         self.connection = None
         self.connectionFile = ""
         self.connection_changed.emit(self.connection)
+
+    def confirm_message_box(self, title: str, message: str, yes_button_mess: str = "Tak", no_button_mess: str = "Nie") -> bool:
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle(title)
+        dlg.setText(message)
+        yes_button = QPushButton(yes_button_mess)
+        no_button = QPushButton(no_button_mess)
+
+        dlg.addButton(yes_button, QMessageBox.ButtonRole.AcceptRole)
+        dlg.addButton(no_button, QMessageBox.ButtonRole.RejectRole)
+        dlg.setIcon(QMessageBox.Icon.Question)
+        reply = dlg.exec()
+
+        if reply - 2 == QMessageBox.ButtonRole.AcceptRole.value:
+            print("Zamknięto.")
+            return True
+        else:
+            print("Anulowano.")
+            return False
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -35,7 +35,7 @@ class MenuBar(QMenuBar):
 
         self.close_connection = QAction('Zamknij', self)
         self.close_connection.setEnabled(False)
-        self.close_connection
+        self.close_connection.setShortcut("Esc")
         self.close_connection.triggered.connect(close_connection)
 
         self.delete_connection = QAction('Usuń', self)
