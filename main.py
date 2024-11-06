@@ -11,6 +11,7 @@ from CommandsList import CommandList
 from ConnectionsList import ConnectionsList
 from CurrentConnection import CurrentConnection
 from MenuBar import MenuBar
+from NewConnectionEditor import NewConnectionEditor
 from TerminalView import TerminalView
 from NetManage.utils import read_nmconn, SSHTEL_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 
@@ -23,8 +24,10 @@ sys.excepthook = exception_hook
 class NetManageGUI(QMainWindow):
     connection_changed = pyqtSignal(object)
     central_widget = None
+    grid = None
     def __init__(self):
         super().__init__()
+        self.new_connection_editor = None
         self.command_list = None
         self.command_editor = None
         self.current_connection = None
@@ -40,32 +43,37 @@ class NetManageGUI(QMainWindow):
         self.command_list = CommandList()
         self.command_editor = CommandEditor()
         self.current_connection = CurrentConnection()
+        self.new_connection_editor = NewConnectionEditor()
         self.connections_list = ConnectionsList(self.setConnection)
 
 
-        menu_bar = MenuBar(self.connections_list.load_list, self.closeConnection, self.delete_connection)
+        menu_bar = MenuBar(self.connections_list.load_list, self.closeConnection, self.delete_connection,\
+                           self.new_connection)
         self.setMenuBar(menu_bar)
         self.setCentralWidget(self.central_widget)
 
-        grid = QGridLayout(self.central_widget)
+        self.grid = QGridLayout(self.central_widget)
 
         self.connection_changed.connect(self.current_connection.update_connection)
         self.connection_changed.connect(menu_bar.toggleActionActivation)
 
-        grid.addWidget(self.command_list, 0, 0, 3, 1)
-        grid.addWidget(self.command_editor, 0, 1, 2, 2)
-        grid.addWidget(self.terminal_view, 2, 1, 1, 2)
-        grid.addWidget(self.current_connection, 0, 3, 1, 1)
-        grid.addWidget(self.connections_list, 1, 3, 2, 1)
+        self.grid.addWidget(self.command_list, 0, 0, 3, 1)
+        self.grid.addWidget(self.command_editor, 0, 1, 2, 2)
+        self.grid.addWidget(self.terminal_view, 2, 1, 1, 2)
+        self.grid.addWidget(self.current_connection, 0, 3, 1, 1)
+        self.grid.addWidget(self.connections_list, 1, 3, 2, 1)
 
 
         self.setWindowIcon(QIcon("./assets/icon.ico"))
         self.setWindowTitle('NetManageGUI')
         self.setGeometry(100, 100, 1000, 750)
 
+        self.new_connection()
+
     def setConnection(self, connection_file):
         if self.connection is not None:
-            change_conn = self.confirm_message_box("Zmiana połączenia", "Czy na pewno chcesz zmienić połączenie?")
+            change_conn = self.confirm_message_box("Zmiana połączenia",
+                                                   "Czy na pewno chcesz zmienić połączenie?")
             if not change_conn:
                 return
 
@@ -81,7 +89,8 @@ class NetManageGUI(QMainWindow):
 
     def closeConnection(self, skip_confirm=False):
 
-        if not skip_confirm and not self.confirm_message_box("Zamknięcie połączenia", "Czy na pewno chcesz zamknąć połączenie?"):
+        if not skip_confirm and not self.confirm_message_box("Zamknięcie połączenia",
+                                                             "Czy na pewno chcesz zamknąć połączenie?"):
             return
 
         self.connection = None
@@ -89,7 +98,8 @@ class NetManageGUI(QMainWindow):
         self.connection_changed.emit(self.connection)
 
     def delete_connection(self):
-        if not self.confirm_message_box("Usuwanie połączenia", f"Czy na pewno chcesz usunąć połączenie\n{self.connectionFile}?"):
+        if not self.confirm_message_box("Usuwanie połączenia",
+                                        f"Czy na pewno chcesz usunąć połączenie\n{self.connectionFile}?"):
             return
 
 
@@ -101,7 +111,14 @@ class NetManageGUI(QMainWindow):
 
         self.closeConnection(True)
 
-    def confirm_message_box(self, title: str, message: str, yes_button_mess: str = "Tak", no_button_mess: str = "Nie", icon = QMessageBox.Icon.Question) -> bool:
+    def new_connection(self):
+        print("new connection")
+        self.grid.addWidget(self.new_connection_editor, 0, 1, 2, 2)
+        self.new_connection_editor.show()
+        self.command_editor.hide()
+
+    def confirm_message_box(self, title: str, message: str, yes_button_mess: str = "Tak",
+                            no_button_mess: str = "Nie", icon = QMessageBox.Icon.Question) -> bool:
         dlg = QMessageBox(self)
         dlg.setWindowTitle(title)
         dlg.setText(message)
