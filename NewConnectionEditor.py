@@ -1,14 +1,9 @@
-from wsgiref.validate import validator
-
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout, QSpacerItem, QLineEdit, QSizePolicy
-from PyQt6.uic.Compiler.qtproxies import QtGui
-from utils.comutils import serial_ports
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout
 
-
-
-
+from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
+    COMPortInput
 
 class NewConnectionEditor(QWidget):
     controls = []
@@ -78,7 +73,6 @@ class NewConnectionEditor(QWidget):
         self.main_layout.addStretch(0)
 
     def change_controls(self, arg):
-        print(arg)
         self.clear_layout(self.controls_layout)
         if arg == "SSH":
             self.show_ssh_controls()

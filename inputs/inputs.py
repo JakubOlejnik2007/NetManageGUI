@@ -49,7 +49,6 @@ class DeviceInput(ComboInput):
 class COMPortInput(ComboInput):
     def __init__(self):
         ports = serial_ports()
-        print(ports)
         super().__init__("Port COM:", ports if len(ports) > 0 else ["No COM port available."])
 
 
