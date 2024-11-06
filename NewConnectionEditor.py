@@ -1,12 +1,13 @@
 from PyQt6 import QtCore
-from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout
+from PyQt6.QtGui import QIntValidator, QIcon
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout, QPushButton, QStyle
 
 from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
 
 class NewConnectionEditor(QWidget):
     controls = []
+    values = []
     def __init__(self):
         super().__init__()
         self.main_layout = QVBoxLayout()
@@ -70,6 +71,22 @@ class NewConnectionEditor(QWidget):
 
         self.show_ssh_controls()
 
+        self.control_buttons_layout = QHBoxLayout()
+
+        self.save_connection = QPushButton("Zapisz połączenie")
+        self.save_connection.setIcon(self.save_connection.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
+        self.save_connection.clicked.connect(self.save_connection_handler)
+        self.temp_connection = QPushButton("Tymczasowe połączenie")
+        self.temp_connection.setIcon(self.temp_connection.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
+        self.close_creator = QPushButton("Zamknij kreator")
+        self.close_creator.setIcon(self.close_creator.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
+
+        self.control_buttons_layout.addWidget(self.save_connection)
+        self.control_buttons_layout.addWidget(self.temp_connection)
+        self.control_buttons_layout.addWidget(self.close_creator)
+
+        self.main_layout.addLayout(self.control_buttons_layout)
+
         self.main_layout.addStretch(0)
 
     def change_controls(self, arg):
@@ -115,3 +132,13 @@ class NewConnectionEditor(QWidget):
                 child.widget().deleteLater()
             elif child.layout():
                 self.clear_layout(child.layout())
+
+    def save_connection_handler(self):
+        pass
+
+    def get_values(self):
+        values = [control.getValue() for control in self.controls]
+        values.insert(0, self.combo.currentText())
+
+    def validate_input(self):
+        pass

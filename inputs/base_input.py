@@ -33,3 +33,6 @@ class BaseInput:
 
     def getLayout(self):
         return self.input_layout
+
+    def getValue(self):
+        return self.input.text()
