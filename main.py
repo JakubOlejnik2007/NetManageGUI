@@ -43,11 +43,11 @@ class NetManageGUI(QMainWindow):
         self.command_list = CommandList()
         self.command_editor = CommandEditor()
         self.current_connection = CurrentConnection()
-        self.new_connection_editor = NewConnectionEditor()
+        self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view)
         self.connections_list = ConnectionsList(self.setConnection)
 
 
-        menu_bar = MenuBar(self.connections_list.load_list, self.closeConnection, self.delete_connection,\
+        menu_bar = MenuBar(self.connections_list.load_list, self.closeConnection, self.delete_connection,
                            self.new_connection)
         self.setMenuBar(menu_bar)
         self.setCentralWidget(self.central_widget)

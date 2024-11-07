@@ -2,14 +2,16 @@ from PyQt6 import QtCore
 from PyQt6.QtGui import QIntValidator, QIcon
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout, QPushButton, QStyle
 
+from TerminalView import TerminalView
 from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
 
 class NewConnectionEditor(QWidget):
     controls = []
     values = []
-    def __init__(self):
+    def __init__(self, terminal_view: TerminalView):
         super().__init__()
+        self.terminal_view = terminal_view
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
@@ -138,11 +140,33 @@ class NewConnectionEditor(QWidget):
                 self.clear_layout(child.layout())
 
     def save_connection_handler(self):
-        pass
+        self.get_values()
+
+        command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[6]}\" -po {self.values[3]} -pa \"{self.values[4]}\" -e \"{self.values[5]}\""
+
+        print(command)
+
+        self.terminal_view.run_command(command)
+        self.terminal_view.output_received.connect(self.handle_command_result)
+
 
     def get_values(self):
-        values = [control.getValue() for control in self.controls]
-        values.insert(0, self.combo.currentText())
+        self.values = [control.getValue() for control in self.controls]
+        self.values.insert(0, self.combo.currentText())
+
 
     def validate_input(self):
-        pass
+        self.get_values()
+
+
+
+    def handle_command_result(self, result):
+        isSuccess = self.is_success(result)
+        print(isSuccess)
+
+
+    def is_success(self, result):
+        for line in result.split("\n"):
+            if line.strip() == "Success":
+                return True
+        return False
