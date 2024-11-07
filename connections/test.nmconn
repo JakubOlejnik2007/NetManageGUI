@@ -1,9 +1,0 @@
--- META
-NAME: Testowe połączenie
-METHOD: COM
--- DATA
-PORT: COM5
-BAUDRATE: 9600
-EXECPASS: admin
--- DEVICE
-DEVICE: cisco_ios

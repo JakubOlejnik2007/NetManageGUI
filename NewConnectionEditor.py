@@ -21,10 +21,10 @@ class NewConnectionEditor(QWidget):
             font-weight: bold;
             padding: 0px;
             width:100%;
-            height: 100px;
+            height: 30px;
         """)
         self.title.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.title.setFixedHeight(100)
+        self.title.setFixedHeight(60)
         self.main_layout.addWidget(self.title)
 
         self.subtitle = QLabel("Aby utworzyć połączenie należy wybrać rodzaj połączenia oraz uzupełnić formularz właściwymi danymi. Jeżeli pole ma pozostać puste (np. EXEC) to należy pozostawić je puste.")
@@ -34,10 +34,10 @@ class NewConnectionEditor(QWidget):
                     font-weight: bold;
                     padding: 0px;
                     width:100%;
-                    height: 100px;
+                    height: 30px;
                 """)
         self.subtitle.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.subtitle.setFixedHeight(100)
+        self.subtitle.setFixedHeight(40)
         self.subtitle.setWordWrap(True)
         self.main_layout.addWidget(self.subtitle)
 
@@ -75,15 +75,19 @@ class NewConnectionEditor(QWidget):
 
         self.save_connection = QPushButton("Zapisz połączenie")
         self.save_connection.setIcon(self.save_connection.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
+        self.save_connection.setStyleSheet("margin-top:10px; padding: 5px;")
         self.save_connection.clicked.connect(self.save_connection_handler)
         self.temp_connection = QPushButton("Tymczasowe połączenie")
         self.temp_connection.setIcon(self.temp_connection.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
+        self.temp_connection.setStyleSheet("margin-top:10px; padding: 5px;")
         self.close_creator = QPushButton("Zamknij kreator")
+        self.close_creator.setStyleSheet("margin-top:10px; padding: 5px;")
         self.close_creator.setIcon(self.close_creator.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
 
-        self.control_buttons_layout.addWidget(self.save_connection)
-        self.control_buttons_layout.addWidget(self.temp_connection)
+
         self.control_buttons_layout.addWidget(self.close_creator)
+        self.control_buttons_layout.addWidget(self.temp_connection)
+        self.control_buttons_layout.addWidget(self.save_connection)
 
         self.main_layout.addLayout(self.control_buttons_layout)
 
