@@ -9,7 +9,7 @@ from utils.comutils import serial_ports
 
 class PortInput(BaseInput):
     def __init__(self, label, validator, hide_input=False, is_telnet=False):
-        super().__init__(label, validator=validator, hide_input=hide_input, default_value="23" if is_telnet else "22")
+        super().__init__(label, validator=validator, hide_input=hide_input, default_value="23" if is_telnet else "22", max_length=5)
 
 class BaudrateInput(BaseInput):
     def __init__(self):
@@ -66,6 +66,7 @@ class HostInput:
             ip.setValidator(QIntValidator())
             ip.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             ip.setText("0")
+            ip.setValidator(QIntValidator(0,255))
             self.ips_layout.addWidget(ip, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
             if i < 3:
                 dot = QLabel(".")

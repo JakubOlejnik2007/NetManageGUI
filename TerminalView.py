@@ -26,7 +26,6 @@ class TerminalView(QWidget):
             self.process.start(command)
     def read_stdout(self):
         output = self.process.readAllStandardOutput().data().decode()
-        print(output)
         self.output_area.append(output)
         self.output_received.emit(output)
     def read_stderr(self):

@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QLineEdit, QSizePolicy, QHBoxLayout, QLabel
 
 
 class BaseInput:
-    def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit):
+    def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit, max_length=-1):
         self.input_layout = QHBoxLayout()
         self.inputLabel = QLabel(label)
         self.inputLabel.setStyleSheet("""
@@ -17,7 +17,8 @@ class BaseInput:
 
         self.input = input_type()
         if isinstance(self.input, QLineEdit):
-            self.input.setMaxLength(5)
+            if max_length > -1:
+                self.input.setMaxLength(max_length)
             if default_value:
                 self.input.setText(default_value)
             if validator:

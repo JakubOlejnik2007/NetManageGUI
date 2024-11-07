@@ -5,6 +5,9 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout
 from TerminalView import TerminalView
 from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
+from validators.validators import validate_method, validate_string, validate_sshtel_port, validate_ip_list, \
+    validate_com_port, validate_baudrate
+
 
 class NewConnectionEditor(QWidget):
     controls = []
@@ -12,6 +15,7 @@ class NewConnectionEditor(QWidget):
     def __init__(self, terminal_view: TerminalView):
         super().__init__()
         self.terminal_view = terminal_view
+        self.terminal_view.output_received.connect(self.handle_command_result)
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
@@ -39,7 +43,7 @@ class NewConnectionEditor(QWidget):
                     height: 30px;
                 """)
         self.subtitle.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.subtitle.setFixedHeight(40)
+        self.subtitle.setMinimumHeight(65)
         self.subtitle.setWordWrap(True)
         self.main_layout.addWidget(self.subtitle)
 
@@ -108,7 +112,7 @@ class NewConnectionEditor(QWidget):
 
     def show_ssh_controls(self):
         self.controls = [
-            ConnnameInput(), HostInput(), PortInput("Port SSH:", QIntValidator()), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
+            ConnnameInput(), HostInput(), PortInput("Port SSH:", QIntValidator(0, 65535)), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
         ]
         for control in self.controls:
             self.controls_layout.addLayout(control.getLayout())
@@ -116,7 +120,7 @@ class NewConnectionEditor(QWidget):
 
     def show_telnet_controls(self):
         self.controls = [
-            ConnnameInput(), HostInput(), PortInput("Port TELNET:", QIntValidator(), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
+            ConnnameInput(), HostInput(), PortInput("Port TELNET:", QIntValidator(0, 65535), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
         ]
         for control in self.controls:
             self.controls_layout.addLayout(control.getLayout())
@@ -142,12 +146,24 @@ class NewConnectionEditor(QWidget):
     def save_connection_handler(self):
         self.get_values()
 
-        command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[6]}\" -po {self.values[3]} -pa \"{self.values[4]}\" -e \"{self.values[5]}\""
+        if self.validate_input():
+            if self.values[0] == "SSH":
+                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[7]}\" -po {self.values[3]} -u \"{self.values[4]}\" -pa \"{self.values[5]}\" -e \"{self.values[6]}\""
+                print(command)
+                self.terminal_view.run_command(command)
 
-        print(command)
+            elif self.values[0] == "TELNET":
+                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[6]}\" -po {self.values[3]} -pa \"{self.values[4]}\" -e \"{self.values[5]}\""
+                print(command)
+                self.terminal_view.run_command(command)
 
-        self.terminal_view.run_command(command)
-        self.terminal_view.output_received.connect(self.handle_command_result)
+            elif self.values[0] == "COM":
+                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -po \"{self.values[2]}\" -b \"{self.values[3]}\" -e \"{self.values[4]}\""
+                print(command)
+                self.terminal_view.run_command(command)
+
+        else:
+            pass
 
 
     def get_values(self):
@@ -155,9 +171,25 @@ class NewConnectionEditor(QWidget):
         self.values.insert(0, self.combo.currentText())
 
 
-    def validate_input(self):
+    def validate_input(self) -> bool:
         self.get_values()
 
+        if not validate_method(self.values[0]):
+            return False
+
+        if self.values[0] == "SSH":
+            return validate_string(self.values[1]) and validate_ip_list(self.values[2]) and validate_sshtel_port(int(self.values[3])) and validate_string(self.values[4]) and validate_string(self.values[5]) and validate_string(self.values[6])
+
+        elif self.values[0] == "TELNET":
+            return validate_string(self.values[1]) and validate_ip_list(self.values[2]) and validate_sshtel_port(int(self.values[3])) and validate_string(self.values[4]) and validate_string(self.values[5])
+
+        elif self.values[0] == "TFTP":
+            pass
+
+        elif self.values[0] == "COM":
+            return validate_string(self.values[1]) and validate_com_port(self.values[2]) and validate_baudrate(int(self.values[3])) and validate_string(self.values[4])
+
+        return False
 
 
     def handle_command_result(self, result):
