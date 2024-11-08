@@ -43,7 +43,7 @@ class NetManageGUI(QMainWindow):
         self.command_list = CommandList()
         self.command_editor = CommandEditor()
         self.current_connection = CurrentConnection()
-        self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view)
+        self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
         self.connections_list = ConnectionsList(self.setConnection)
 
 
@@ -113,9 +113,7 @@ class NetManageGUI(QMainWindow):
 
     def new_connection(self):
         print("new connection")
-        self.grid.addWidget(self.new_connection_editor, 0, 1, 2, 2)
         self.new_connection_editor.show()
-        self.command_editor.hide()
 
     def confirm_message_box(self, title: str, message: str, yes_button_mess: str = "Tak",
                             no_button_mess: str = "Nie", icon = QMessageBox.Icon.Question) -> bool:

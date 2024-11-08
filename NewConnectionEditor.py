@@ -9,13 +9,29 @@ from validators.validators import validate_method, validate_string, validate_ssh
     validate_com_port, validate_baudrate
 
 
+def is_success(result):
+    for line in result.split("\n"):
+        if line.strip() == "Success":
+            return True
+    return False
+
+
 class NewConnectionEditor(QWidget):
     controls = []
     values = []
-    def __init__(self, terminal_view: TerminalView):
+    def __init__(self, terminal_view: TerminalView, main):
         super().__init__()
+
+        self.setWindowTitle("Kreator połączeń")
+        self.setGeometry(100, 100, 300, 200)
+
+        self.setFixedSize(416,482)
+
         self.terminal_view = terminal_view
         self.terminal_view.output_received.connect(self.handle_command_result)
+
+        self.main = main
+
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
@@ -83,21 +99,24 @@ class NewConnectionEditor(QWidget):
         self.save_connection.setIcon(self.save_connection.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
         self.save_connection.setStyleSheet("margin-top:10px; padding: 5px;")
         self.save_connection.clicked.connect(self.save_connection_handler)
+
         self.temp_connection = QPushButton("Tymczasowe połączenie")
         self.temp_connection.setIcon(self.temp_connection.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
         self.temp_connection.setStyleSheet("margin-top:10px; padding: 5px;")
+
         self.close_creator = QPushButton("Zamknij kreator")
         self.close_creator.setStyleSheet("margin-top:10px; padding: 5px;")
         self.close_creator.setIcon(self.close_creator.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
+        self.close_creator.clicked.connect(self.handle_close)
 
 
         self.control_buttons_layout.addWidget(self.close_creator)
         self.control_buttons_layout.addWidget(self.temp_connection)
         self.control_buttons_layout.addWidget(self.save_connection)
 
+        self.main_layout.addStretch()
         self.main_layout.addLayout(self.control_buttons_layout)
-
-        self.main_layout.addStretch(0)
+        self.main_layout.setContentsMargins(10,10,10,10)
 
     def change_controls(self, arg):
         self.clear_layout(self.controls_layout)
@@ -193,12 +212,10 @@ class NewConnectionEditor(QWidget):
 
 
     def handle_command_result(self, result):
-        isSuccess = self.is_success(result)
+        isSuccess = is_success(result)
         print(isSuccess)
+        self.main.connections_list.load_list()
+        self.main.setConnection(f"connections/{self.values[1].lower().replace(" ","_")}.nmconn")
 
-
-    def is_success(self, result):
-        for line in result.split("\n"):
-            if line.strip() == "Success":
-                return True
-        return False
+    def handle_close(self):
+        self.close()
