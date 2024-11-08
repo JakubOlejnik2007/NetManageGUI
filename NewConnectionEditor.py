@@ -24,6 +24,8 @@ class NewConnectionEditor(QWidget):
 
         self.setWindowTitle("Kreator połączeń")
         self.setGeometry(100, 100, 300, 200)
+        self.setWindowIcon(QIcon("assets/icon.ico"))
+
 
         self.setFixedSize(416,482)
 
@@ -103,6 +105,7 @@ class NewConnectionEditor(QWidget):
         self.temp_connection = QPushButton("Tymczasowe połączenie")
         self.temp_connection.setIcon(self.temp_connection.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
         self.temp_connection.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.temp_connection.clicked.connect(lambda: self.save_connection_handler(temp=True))
 
         self.close_creator = QPushButton("Zamknij kreator")
         self.close_creator.setStyleSheet("margin-top:10px; padding: 5px;")
@@ -162,8 +165,13 @@ class NewConnectionEditor(QWidget):
             elif child.layout():
                 self.clear_layout(child.layout())
 
-    def save_connection_handler(self):
+    def save_connection_handler(self, temp = False):
         self.get_values()
+
+        print("temp", temp)
+
+        if temp:
+            self.values[1] = "temp"
 
         if self.validate_input():
             if self.values[0] == "SSH":
@@ -191,8 +199,6 @@ class NewConnectionEditor(QWidget):
 
 
     def validate_input(self) -> bool:
-        self.get_values()
-
         if not validate_method(self.values[0]):
             return False
 
@@ -212,10 +218,10 @@ class NewConnectionEditor(QWidget):
 
 
     def handle_command_result(self, result):
-        isSuccess = is_success(result)
-        print(isSuccess)
-        self.main.connections_list.load_list()
-        self.main.setConnection(f"connections/{self.values[1].lower().replace(" ","_")}.nmconn")
+        if is_success(result):
+            self.main.connections_list.load_list()
+            self.main.setConnection(f"{self.values[1].lower().replace(" ","_")}.nmconn")
+            self.handle_close()
 
     def handle_close(self):
         self.close()
