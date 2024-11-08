@@ -1,4 +1,4 @@
-from NetManage.utils import SSHTEL_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
+from NetManage.utils import SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
@@ -51,7 +51,7 @@ class MenuBar(QMenuBar):
         self.connection_menu.addAction(self.close_connection)
         self.connection_menu.addAction(self.delete_connection)
 
-    def toggleActionActivation(self, connection: SSHTEL_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None):
+    def toggleActionActivation(self, connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None):
         enabled = False
         if connection is not None:
             enabled = True

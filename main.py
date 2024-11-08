@@ -13,7 +13,7 @@ from CurrentConnection import CurrentConnection
 from MenuBar import MenuBar
 from NewConnectionEditor import NewConnectionEditor
 from TerminalView import TerminalView
-from NetManage.utils import read_nmconn, SSHTEL_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
+from NetManage.utils import read_nmconn, SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 
 def exception_hook(exctype, value, traceback):
     print("Błąd:", exctype, value)
@@ -35,7 +35,7 @@ class NetManageGUI(QMainWindow):
         self.terminal_view = None
         self.initUI()
         self.connectionFile = ""
-        self.connection: SSHTEL_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
+        self.connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
 
     def initUI(self):
         self.central_widget = QWidget(self)
