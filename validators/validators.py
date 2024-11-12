@@ -9,9 +9,13 @@ def validate_method(method: str) -> bool:
     return method in available_methods
 
 def validate_sshtel_port(port: int) -> bool:
+    if type(port) != int:
+        port = int(port)
     return 0 <= port <= 65535
 
 def validate_baudrate(baudrate: int) -> bool:
+    if type(baudrate) != int:
+        baudrate = int(baudrate)
     return 0 <= baudrate <= 115200
 
 def validate_string(string: str) -> bool:

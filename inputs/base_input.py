@@ -1,9 +1,15 @@
-from PyQt6.QtWidgets import QLineEdit, QSizePolicy, QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QLineEdit, QSizePolicy, QHBoxLayout, QVBoxLayout, QLabel
+
+from validators.validators import validate_string
 
 
 class BaseInput:
-    def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit, max_length=-1):
+    value = None
+    def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit,
+                 max_length=-1):
+        self.main_layout = QVBoxLayout()  # Zmieniono na główny layout jako QVBoxLayout
         self.input_layout = QHBoxLayout()
+
         self.inputLabel = QLabel(label)
         self.inputLabel.setStyleSheet("""
                     margin: 10px;
@@ -32,8 +38,28 @@ class BaseInput:
         self.input_layout.setStretch(0, 1)
         self.input_layout.setStretch(1, 1)
 
+        self.errorLabel = QLabel()
+        self.errorLabel.setStyleSheet("color: red; font-size: 10px;")
+        self.errorLabel.setVisible(False)
+
+        self.main_layout.addLayout(self.input_layout)
+        self.main_layout.addWidget(self.errorLabel)
+
     def getLayout(self):
-        return self.input_layout
+        return self.main_layout
 
     def getValue(self):
-        return self.input.text()
+        self.value = self.input.text()
+        self.validate()
+        return self.value
+
+    def validate(self, validate_method = validate_string, invalid_message = "Nieprawidłowy ciąg znaków."):
+        is_valid_value = validate_method(self.value)
+
+        if not is_valid_value:
+            self.errorLabel.setText(invalid_message)
+            self.errorLabel.setVisible(True)
+        else:
+            self.errorLabel.setVisible(False)
+
+        return is_valid_value

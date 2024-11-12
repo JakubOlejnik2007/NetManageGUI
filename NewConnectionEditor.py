@@ -5,15 +5,9 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout
 from TerminalView import TerminalView
 from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
+from utils.detect_success import is_success
 from validators.validators import validate_method, validate_string, validate_sshtel_port, validate_ip_list, \
     validate_com_port, validate_baudrate
-
-
-def is_success(result):
-    for line in result.split("\n"):
-        if line.strip() == "Success":
-            return True
-    return False
 
 
 class NewConnectionEditor(QWidget):
@@ -27,10 +21,9 @@ class NewConnectionEditor(QWidget):
         self.setWindowIcon(QIcon("assets/icon.ico"))
 
 
-        self.setFixedSize(416,482)
+        self.setFixedSize(416, 550)
 
         self.terminal_view = terminal_view
-        self.terminal_view.output_received.connect(self.handle_command_result)
 
         self.main = main
 
@@ -167,7 +160,7 @@ class NewConnectionEditor(QWidget):
 
     def save_connection_handler(self, temp = False):
         self.get_values()
-
+        self.terminal_view.output_received.connect(self.handle_command_result)
         print("temp", temp)
 
         if temp:
