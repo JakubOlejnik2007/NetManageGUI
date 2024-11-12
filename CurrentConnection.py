@@ -28,18 +28,22 @@ class CurrentConnection(QWidget):
 
         self.setLayout(self.layout)
 
+        self.connection_icon = QLabel()
+        self.connection_icon.setPixmap(
+            self.style().standardIcon(QStyle.StandardPixmap.SP_DialogNoButton).pixmap(20, 20))
+
 
 
     def update_connection(self, connection: COM_CONNECTION | SSH_CONNECTION | TELNET_CONNECTION | TFTP_CONNECTION | None, connection_file):
+        self.connection_icon = QLabel()
+        self.connection_icon.setPixmap(
+            self.style().standardIcon(QStyle.StandardPixmap.SP_DialogNoButton).pixmap(20, 20))
+        self.is_connected = False
         self.connection = connection
         self.connectionFile = connection_file
         if self.connection is None:
             self.clear_layout(self.layout)
             self.connectionFile = None
-            self.is_connected = False
-            self.connection_icon = QLabel()
-            self.connection_icon.setPixmap(
-            self.style().standardIcon(QStyle.StandardPixmap.SP_DialogNoButton).pixmap(20, 20))
             return
         print(connection.getNetmikoConnDict())
 
@@ -142,6 +146,8 @@ class CurrentConnection(QWidget):
     def handle_command_result(self, result):
         if is_success(result):
             print(result)
+            self.connection_icon.setPixmap(
+                self.style().standardIcon(QStyle.StandardPixmap.SP_DialogYesButton).pixmap(20, 20))
         else:
             print(result)
             print("Connection test failed")
