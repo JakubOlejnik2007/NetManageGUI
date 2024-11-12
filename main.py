@@ -42,7 +42,7 @@ class NetManageGUI(QMainWindow):
         self.terminal_view = TerminalView()
         self.command_list = CommandList()
         self.command_editor = CommandEditor()
-        self.current_connection = CurrentConnection()
+        self.current_connection = CurrentConnection(self.terminal_view)
         self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
         self.connections_list = ConnectionsList(self.setConnection)
 
@@ -54,7 +54,7 @@ class NetManageGUI(QMainWindow):
 
         self.grid = QGridLayout(self.central_widget)
 
-        self.connection_changed.connect(self.current_connection.update_connection)
+        self.connection_changed.connect(lambda conn: self.current_connection.update_connection(conn, self.connectionFile))
         self.connection_changed.connect(menu_bar.toggleActionActivation)
 
         self.grid.addWidget(self.command_list, 0, 0, 3, 1)
@@ -69,6 +69,7 @@ class NetManageGUI(QMainWindow):
         self.setGeometry(100, 100, 1000, 750)
 
         self.new_connection()
+
 
     def setConnection(self, connection_file):
         if self.connection is not None:
@@ -136,6 +137,9 @@ class NetManageGUI(QMainWindow):
             return False
 
 if __name__ == '__main__':
+    if os.path.exists(".\\connections\\temp.nmconn"):
+        os.remove(".\\connections\\temp.nmconn")
+
     app = QApplication(sys.argv)
     window = NetManageGUI()
     window.show()
