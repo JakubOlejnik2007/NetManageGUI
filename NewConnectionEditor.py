@@ -178,7 +178,7 @@ class NewConnectionEditor(QWidget):
                 self.terminal_view.run_command(command)
 
             elif self.values[0] == "COM":
-                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -po \"{self.values[2]}\" -b \"{self.values[3]}\" -e \"{self.values[4]}\""
+                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"connections/{self.values[1].lower().replace(" ","_")}.nmconn\" -m \"{self.values[0]}\" -d \"{self.values[5]}\" -po \"{self.values[2]}\" -b \"{self.values[3]}\" -e \"{self.values[4]}\""
                 print(command)
                 self.terminal_view.run_command(command)
 
