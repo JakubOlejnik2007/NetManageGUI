@@ -2,8 +2,12 @@ from NetManage.utils import SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, T
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
+from ConnectionsList import ConnectionsList
+from CurrentConnection import CurrentConnection
+
+
 class MenuBar(QMenuBar):
-    def __init__(self, reload_connections, close_connection, delete_connection, new_connection):
+    def __init__(self, connections_list: ConnectionsList, main, current_connection: CurrentConnection):
         super().__init__()
 
         self.file_menu = self.addMenu('Plik')
@@ -20,17 +24,19 @@ class MenuBar(QMenuBar):
 
         refresh = QAction("Odśwież", self)
         refresh.setShortcut("F5")
-        refresh.triggered.connect(reload_connections)
+        refresh.triggered.connect(connections_list.load_list)
 
         self.tools_menu.addAction(refresh)
 
         self.connection_menu = self.addMenu('Połączenie')
         self.new_connection = QAction('Nowe', self)
         self.new_connection.setShortcut("Ctrl+N")
-        self.new_connection.triggered.connect(new_connection)
+        self.new_connection.triggered.connect(main.new_connection)
 
         self.test_connection = QAction('Test', self)
         self.test_connection.setEnabled(False)
+        self.test_connection.setShortcut("Ctrl+T")
+        self.test_connection.triggered.connect(current_connection.test_connection_handler)
 
         self.edit_connection = QAction('Edycja', self)
         self.edit_connection.setEnabled(False)
@@ -38,12 +44,12 @@ class MenuBar(QMenuBar):
         self.close_connection = QAction('Zamknij', self)
         self.close_connection.setEnabled(False)
         self.close_connection.setShortcut("Esc")
-        self.close_connection.triggered.connect(close_connection)
+        self.close_connection.triggered.connect(main.close_connection)
 
         self.delete_connection = QAction('Usuń', self)
         self.delete_connection.setEnabled(False)
         self.delete_connection.setShortcut("Ctrl+Del")
-        self.delete_connection.triggered.connect(delete_connection)
+        self.delete_connection.triggered.connect(main.delete_connection)
 
         self.connection_menu.addAction(self.new_connection)
         self.connection_menu.addAction(self.test_connection)

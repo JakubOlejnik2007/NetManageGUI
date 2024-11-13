@@ -42,13 +42,12 @@ class NetManageGUI(QMainWindow):
         self.terminal_view = TerminalView()
         self.command_list = CommandList()
         self.command_editor = CommandEditor()
-        self.current_connection = CurrentConnection(self.terminal_view)
+        self.current_connection = CurrentConnection(self.terminal_view, self)
         self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
-        self.connections_list = ConnectionsList(self.setConnection)
+        self.connections_list = ConnectionsList(self.set_connection)
 
 
-        menu_bar = MenuBar(self.connections_list.load_list, self.closeConnection, self.delete_connection,
-                           self.new_connection)
+        menu_bar = MenuBar(self.connections_list, self, self.current_connection)
         self.setMenuBar(menu_bar)
         self.setCentralWidget(self.central_widget)
 
@@ -68,10 +67,10 @@ class NetManageGUI(QMainWindow):
         self.setWindowTitle('NetManageGUI')
         self.setGeometry(100, 100, 1000, 750)
 
-        self.new_connection()
+        #self.new_connection()
 
 
-    def setConnection(self, connection_file):
+    def set_connection(self, connection_file):
         if self.connection is not None:
             change_conn = self.confirm_message_box("Zmiana połączenia",
                                                    "Czy na pewno chcesz zmienić połączenie?")
@@ -88,7 +87,7 @@ class NetManageGUI(QMainWindow):
             self.connection = None
             self.connectionFile = ""
 
-    def closeConnection(self, skip_confirm=False):
+    def close_connection(self, skip_confirm=False):
 
         if not skip_confirm and not self.confirm_message_box("Zamknięcie połączenia",
                                                              "Czy na pewno chcesz zamknąć połączenie?"):
@@ -110,7 +109,7 @@ class NetManageGUI(QMainWindow):
         else:
             print("The file does not exist")
 
-        self.closeConnection(True)
+        self.close_connection(True)
 
     def new_connection(self):
         print("new connection")
