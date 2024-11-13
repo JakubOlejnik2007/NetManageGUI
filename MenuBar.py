@@ -40,6 +40,8 @@ class MenuBar(QMenuBar):
 
         self.edit_connection = QAction('Edycja', self)
         self.edit_connection.setEnabled(False)
+        self.edit_connection.setShortcut("Ctrl+E")
+        self.edit_connection.triggered.connect(main.edit_connection)
 
         self.close_connection = QAction('Zamknij', self)
         self.close_connection.setEnabled(False)
