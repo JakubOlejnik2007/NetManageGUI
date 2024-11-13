@@ -8,6 +8,7 @@ from PyQt6.QtCore import QProcess, pyqtSignal
 
 from CommandEditor import CommandEditor
 from CommandsList import CommandList
+from ConnectionEditor import ConnectionEditor
 from ConnectionsList import ConnectionsList
 from CurrentConnection import CurrentConnection
 from MenuBar import MenuBar
@@ -80,12 +81,14 @@ class NetManageGUI(QMainWindow):
         self.connectionFile = connection_file
         try:
             self.connection = read_nmconn(f"connections\\{connection_file}")
-            #print(self.connection)
+            print("Połączenie:")
+            print(self.connection)
             self.connection_changed.emit(self.connection)
         except Exception as e:
             print(e)
             self.connection = None
             self.connectionFile = ""
+
 
     def close_connection(self, skip_confirm=False):
 
@@ -110,6 +113,12 @@ class NetManageGUI(QMainWindow):
             print("The file does not exist")
 
         self.close_connection(True)
+
+    def edit_connection(self):
+        print("Edit connection")
+        print(self.connection)
+        connection_editor = ConnectionEditor(terminal_view=self.terminal_view, main=self)
+        connection_editor.show()
 
     def new_connection(self):
         print("new connection")
