@@ -1,5 +1,5 @@
 from NetManage.utils import COM_CONNECTION, SSH_CONNECTION, TELNET_CONNECTION, TFTP_CONNECTION
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QSizePolicy, QStyle
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QSizePolicy, QStyle, QMessageBox
 from PyQt6.uic.properties import QtCore
 from PyQt6 import QtCore
 
@@ -13,11 +13,12 @@ class CurrentConnection(QWidget):
     connectionFile = None
     connection_icon = None
 
-    def __init__(self, terminal_view: TerminalView):
+    def __init__(self, terminal_view: TerminalView, main_app):
         super().__init__()
 
-        self.terminal_view = terminal_view
 
+        self.terminal_view = terminal_view
+        self.main_app = main_app
         self.is_connected = False
 
         self.control_buttons_layout = None
@@ -45,6 +46,10 @@ class CurrentConnection(QWidget):
             self.clear_layout(self.layout)
             self.connectionFile = None
             return
+
+        else:
+            self.test_connection_handler()
+
         print(connection.getNetmikoConnDict())
 
 
@@ -101,6 +106,7 @@ class CurrentConnection(QWidget):
         self.close_connection.setIcon(
         self.close_connection.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton.SP_DialogCancelButton))
         self.close_connection.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.close_connection.clicked.connect(self.main_app.close_connection)
 
         self.test_connection = QPushButton("Test")
         self.test_connection.setIcon(self.test_connection.style().standardIcon(QStyle.StandardPixmap.SP_DriveNetIcon))
@@ -138,16 +144,29 @@ class CurrentConnection(QWidget):
 
     def test_connection_handler(self):
         print(self.connectionFile)
-
-        self.terminal_view.run_command(f"netmanage test-conn -c .\\connections\\{self.connectionFile}")
-
+        self.terminal_view.disconnect_signal()
         self.terminal_view.output_received.connect(self.handle_command_result)
+        self.terminal_view.run_command(f"netmanage test-conn -c \".\\connections\\{self.connectionFile}\"")
+
+
+
 
     def handle_command_result(self, result):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Test połączenia")
+
+
+
         if is_success(result):
             print(result)
             self.connection_icon.setPixmap(
                 self.style().standardIcon(QStyle.StandardPixmap.SP_DialogYesButton).pixmap(20, 20))
+
+            dlg.setText("Połączenie możliwe.")
+            dlg.setIcon(QMessageBox.Icon.Information)
         else:
             print(result)
+            dlg.setText("Brak połączenia.")
+            dlg.setIcon(QMessageBox.Icon.Critical)
             print("Connection test failed")
+        dlg.show()

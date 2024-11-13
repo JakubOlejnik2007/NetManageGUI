@@ -160,6 +160,7 @@ class NewConnectionEditor(QWidget):
 
     def save_connection_handler(self, temp = False):
         self.get_values()
+        self.terminal_view.disconnect_signal()
         self.terminal_view.output_received.connect(self.handle_command_result)
         print("temp", temp)
 
@@ -213,7 +214,7 @@ class NewConnectionEditor(QWidget):
     def handle_command_result(self, result):
         if is_success(result):
             self.main.connections_list.load_list()
-            self.main.setConnection(f"{self.values[1].lower().replace(" ","_")}.nmconn")
+            self.main.set_connection(f"{self.values[1].lower().replace(" ", "_")}.nmconn")
             self.handle_close()
 
     def handle_close(self):

@@ -19,17 +19,11 @@ class TerminalView(QWidget):
         self.setLayout(layout)
         self.setWindowTitle("Terminal PyQt")
         self.resize(600, 400)
-
     def run_command(self, command: str):
         print(f"Command: {command}")
         if command.strip():
-            parts = command.split()
-            program = parts[0]
-            arguments = parts[1:]
-
             self.output_area.append(f"> {command}")
-            self.process.start(program, arguments)
-
+            self.process.start(command)
     def read_stdout(self):
         output = self.process.readAllStandardOutput().data().decode()
         print(output)
@@ -40,3 +34,9 @@ class TerminalView(QWidget):
         print(error)
         self.output_area.append(error)
         self.output_received.emit(error)
+
+    def disconnect_signal(self):
+        try:
+            self.output_received.disconnect()
+        except TypeError:
+            print("Rozłączenie się nie powiodło.")
