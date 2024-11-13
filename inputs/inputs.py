@@ -47,8 +47,8 @@ class UsernameInput(BaseInput):
 
 
 class ConnnameInput(BaseInput):
-    def __init__(self):
-        super().__init__("Nazwa połączenia:")
+    def __init__(self, disabled=False):
+        super().__init__("Nazwa połączenia:", disabled=disabled)
 
     def validate(self, validate_method=validate_string, invalid_message="Nazwa połączenia nie może być pusta. [Wyjątek - połączenie temp]"):
         return super().validate(validate_method, invalid_message)
@@ -122,6 +122,12 @@ class HostInput:
                 ip_field.setText(text if text.isdigit() else "0")
         self.validate()
         return self.values
+
+    def setValue(self, values: list):
+        for i in range(0, self.ips_layout.count(), 2):
+            ip_field = self.ips_layout.itemAt(i).widget()
+            if isinstance(ip_field, QLineEdit):
+                ip_field.setText(values.pop(0))
 
     def validate(self, validate_method=validate_ip_list, invalid_message="Nieprawidłowy adres IPv4"):
         is_valid = validate_method(self.values)

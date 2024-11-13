@@ -6,8 +6,8 @@ from validators.validators import validate_string
 class BaseInput:
     value = None
     def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit,
-                 max_length=-1):
-        self.main_layout = QVBoxLayout()  # Zmieniono na główny layout jako QVBoxLayout
+                 max_length=-1, disabled=False):
+        self.main_layout = QVBoxLayout()
         self.input_layout = QHBoxLayout()
 
         self.inputLabel = QLabel(label)
@@ -33,6 +33,10 @@ class BaseInput:
                 self.input.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
             self.input.setMinimumWidth(150)
             self.input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        if disabled:
+            self.input.setDisabled(True)
+
         self.input_layout.addWidget(self.input)
 
         self.input_layout.setStretch(0, 1)
@@ -63,3 +67,6 @@ class BaseInput:
             self.errorLabel.setVisible(False)
 
         return is_valid_value
+
+    def setValue(self, value):
+        self.input.setText(value)
