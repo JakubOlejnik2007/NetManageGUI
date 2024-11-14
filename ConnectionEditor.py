@@ -28,6 +28,8 @@ class ConnectionEditor(QWidget):
 
         self.connection = main.connection
 
+        arg = self.connection.METHOD
+
         self.main = main
 
         self.main_layout = QVBoxLayout()
@@ -74,10 +76,15 @@ class ConnectionEditor(QWidget):
                 """)
 
         self.combo = QComboBox()
-        self.combo.addItems(["SSH", "COM", "TELNET", "TFTP"])
+        conenction_methods = ["SSH", "COM", "TELNET", "TFTP"]
+        self.combo.addItems(conenction_methods)
         self.combo.setStyleSheet("""
                 width: 30%;
         """)
+
+        self.combo.setCurrentText(arg)
+        self.combo.setDisabled(True)
+
         self.combo.currentTextChanged.connect(self.change_controls)
         self.combo_layout.addWidget(self.comboLabel)
         self.combo_layout.addWidget(self.combo)
@@ -89,7 +96,14 @@ class ConnectionEditor(QWidget):
         self.main_layout.addLayout(self.controls_layout)
         self.setLayout(self.main_layout)
 
-        self.show_ssh_controls()
+        if arg == "SSH":
+            self.show_ssh_controls()
+        elif arg == "TELNET":
+            self.show_telnet_controls()
+        elif arg == "TFTP":
+            self.show_tftp_controls()
+        elif arg == "COM":
+            self.show_com_controls()
 
         self.control_buttons_layout = QHBoxLayout()
 
@@ -124,12 +138,18 @@ class ConnectionEditor(QWidget):
 
     def show_ssh_controls(self):
         self.controls = [
-            ConnnameInput(disabled=True), HostInput(), PortInput("Port SSH:", QIntValidator(0, 65535)), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
+            ConnnameInput(disabled=True), HostInput(), PortInput("Port SSH:", QIntValidator(0, 65535)), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
         ]
 
         print("Połączenie", self.connection)
-
+        self.controls[0].setValue(self.connection.NAME)
         self.controls[1].setValue(self.connection.HOST.split("."))
+        self.controls[2].setValue(self.connection.PORT)
+        self.controls[3].setValue(self.connection.USERNAME)
+        self.controls[4].setValue(self.connection.PASSWORD)
+        self.controls[5].setValue(self.connection.EXECPASS)
+
+
 
         for control in self.controls:
             self.controls_layout.addLayout(control.getLayout())
@@ -137,9 +157,14 @@ class ConnectionEditor(QWidget):
 
     def show_telnet_controls(self):
         self.controls = [
-            ConnnameInput(disabled=True), HostInput(), PortInput("Port TELNET:", QIntValidator(0, 65535), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput()
+            ConnnameInput(disabled=True), HostInput(), PortInput("Port TELNET:", QIntValidator(0, 65535), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
         ]
 
+        self.controls[0].setValue(self.connection.NAME)
+        self.controls[1].setValue(self.connection.HOST.split("."))
+        self.controls[2].setValue(self.connection.PORT)
+        self.controls[3].setValue(self.connection.PASSWORD)
+        self.controls[4].setValue(self.connection.EXECPASS)
 
         for control in self.controls:
             self.controls_layout.addLayout(control.getLayout())

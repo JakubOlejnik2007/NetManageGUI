@@ -116,6 +116,7 @@ class CurrentConnection(QWidget):
         self.edit_connection = QPushButton("Edytuj")
         self.edit_connection.setStyleSheet("margin-top:10px; padding: 5px;")
         self.edit_connection.setIcon(self.edit_connection.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogContentsView))
+        self.edit_connection.clicked.connect(self.main_app.edit_connection)
 
 
         self.control_buttons_layout.addWidget(self.close_connection)

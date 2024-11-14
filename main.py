@@ -26,8 +26,11 @@ class NetManageGUI(QMainWindow):
     connection_changed = pyqtSignal(object)
     central_widget = None
     grid = None
+    connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
+
     def __init__(self):
         super().__init__()
+        self.connection_editor = None
         self.new_connection_editor = None
         self.command_list = None
         self.command_editor = None
@@ -36,7 +39,6 @@ class NetManageGUI(QMainWindow):
         self.terminal_view = None
         self.initUI()
         self.connectionFile = ""
-        self.connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
 
     def initUI(self):
         self.central_widget = QWidget(self)
@@ -46,6 +48,7 @@ class NetManageGUI(QMainWindow):
         self.current_connection = CurrentConnection(self.terminal_view, self)
         self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
         self.connections_list = ConnectionsList(self.set_connection)
+
 
 
         menu_bar = MenuBar(self.connections_list, self, self.current_connection)
@@ -117,8 +120,8 @@ class NetManageGUI(QMainWindow):
     def edit_connection(self):
         print("Edit connection")
         print(self.connection)
-        connection_editor = ConnectionEditor(terminal_view=self.terminal_view, main=self)
-        connection_editor.show()
+        self.connection_editor = ConnectionEditor(terminal_view=self.terminal_view, main=self)
+        self.connection_editor.show()
 
     def new_connection(self):
         print("new connection")

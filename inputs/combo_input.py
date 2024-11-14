@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QHBoxLayout, QLabel, QComboBox
 
 
 class ComboInput:
-    def __init__(self, label, items, disabled_if_empty=True):
+    def __init__(self, label, items, disabled_if_empty=True, value = None):
         self.combo_layout = QHBoxLayout()
         self.comboLabel = QLabel(label)
         self.comboLabel.setStyleSheet("""
@@ -17,6 +17,8 @@ class ComboInput:
         self.combo.addItems(items)
         self.combo.setDisabled((len(items) == 0 or items[0] == "No COM port available.") and disabled_if_empty)
         self.combo.setStyleSheet("width: 30%;")
+        if value is not None:
+            self.combo.setCurrentText(value)
         self.combo_layout.addWidget(self.comboLabel)
         self.combo_layout.addWidget(self.combo)
 

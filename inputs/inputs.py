@@ -29,8 +29,8 @@ class DeviceInput(ComboInput):
         'hp_procurve', 'dell_force10', 'brocade', 'fortinet', 'mikrotik', 'huawei', 'checkpoint', 'paloalto'
     ]
 
-    def __init__(self):
-        super().__init__("Urządzenie:", self.devices)
+    def __init__(self, device = None):
+        super().__init__("Urządzenie:", self.devices, value = device)
 
 class COMPortInput(ComboInput):
     def __init__(self):
