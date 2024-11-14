@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLineEdit, Q
     QWidget, QMessageBox
 from PyQt6.QtCore import QProcess, pyqtSignal
 
-from CommandEditor import CommandEditor
+from CommandEditor.CommandEditor import CommandEditor as CE
 from CommandsList import CommandList
 from ConnectionEditor import ConnectionEditor
 from ConnectionsList import ConnectionsList
@@ -44,7 +44,7 @@ class NetManageGUI(QMainWindow):
         self.central_widget = QWidget(self)
         self.terminal_view = TerminalView()
         self.command_list = CommandList()
-        self.command_editor = CommandEditor()
+        self.command_editor = CE()
         self.current_connection = CurrentConnection(self.terminal_view, self)
         self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
         self.connections_list = ConnectionsList(self.set_connection)

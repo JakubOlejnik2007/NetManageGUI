@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('validators/*', 'validators'), ('utils/*', 'utils'), ('inputs/*', 'inputs')],
+    datas=[('validators/*', 'validators'), ('utils/*', 'utils'), ('inputs/*', 'inputs'), ('CommandEditor/*', 'CommandEditor')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
