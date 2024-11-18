@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QRegularExpression, Qt
-from PyQt6.QtGui import QTextCharFormat, QSyntaxHighlighter, QFont
+from PyQt6.QtGui import QTextCharFormat, QSyntaxHighlighter, QFont, QColor
 
 
 class SyntaxHighlighter(QSyntaxHighlighter):
@@ -38,7 +38,7 @@ class SyntaxHighlighter(QSyntaxHighlighter):
         self.highlightingRules.append((QRegularExpression(r'!.*'), commentFormat))
 
         deviceManagementFormat = QTextCharFormat()
-        deviceManagementFormat.setForeground(Qt.GlobalColor.blue)
+        deviceManagementFormat.setForeground(QColor("lightblue"))
         self.addHighlightingRules([
             "hostname", "username", "password", "enable secret", "line vty", "line con", "enable", "disable"
         ], deviceManagementFormat)
@@ -57,14 +57,23 @@ class SyntaxHighlighter(QSyntaxHighlighter):
         ], stpFormat)
 
         routingFormat = QTextCharFormat()
-        routingFormat.setForeground(Qt.GlobalColor.red)
+        routingFormat.setForeground(QColor("red"))
         self.addHighlightingRules([
             "ip route", "network", "redistribute", "route-map", "access-list", "subnet", "mask"
         ], routingFormat)
 
-    def addHighlightingRules(self, words: list[str], format: QTextCharFormat):
+        customValueFormat = QTextCharFormat()
+        customValueFormat.setFontWeight(QFont.Weight.Bold)
+        customValueFormat.setFontItalic(True)
+        customValueFormat.setForeground(QColor("red"))
+        self.addHighlightingRules([r"\{([^\}]+)\}"], customValueFormat, True)
+
+    def addHighlightingRules(self, words: list[str], format: QTextCharFormat, is_regex: bool = False):
         for word in words:
-            pattern = QRegularExpression(r'\b' + word + r'\b')
+            if is_regex:
+                pattern = QRegularExpression(word)
+            else:
+                pattern = QRegularExpression(r'\b' + word + r'\b')
             self.highlightingRules.append((pattern, format))
 
     def highlightBlock(self, text):
