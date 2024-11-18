@@ -1,0 +1,10 @@
+-- META
+NAME: telnet1
+METHOD: TELNET
+-- DATA
+HOST: 0.0.0.0
+PORT: 23
+PASSWORD: asd
+EXECPASS: asdasd
+-- DEVICE
+DEVICE: cisco_ios
