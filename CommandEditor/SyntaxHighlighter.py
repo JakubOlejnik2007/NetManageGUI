@@ -64,7 +64,7 @@ class SyntaxHighlighter(QSyntaxHighlighter):
 
         customValueFormat = QTextCharFormat()
         customValueFormat.setFontWeight(QFont.Weight.Bold)
-        customValueFormat.setFontItalic(True)
+        #customValueFormat.setFontItalic(True)
         customValueFormat.setForeground(QColor("red"))
         self.addHighlightingRules([r"\{([^\}]+)\}"], customValueFormat, True)
 

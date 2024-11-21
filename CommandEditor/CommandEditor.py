@@ -1,72 +1,64 @@
-from PyQt6.QtWidgets import QMainWindow, QTextEdit, QWidget, QVBoxLayout, QApplication, QPlainTextEdit
-from PyQt6.QtGui import QColor, QTextFormat, QTextCharFormat, QSyntaxHighlighter, QFont, QPainter, QTextCursor
-from PyQt6.QtCore import Qt, QRect, QRegularExpression, QSize
-import sys
+from PyQt6 import QtCore
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout
 
-from CommandEditor.SyntaxHighlighter import SyntaxHighlighter
+from CommandEditor.CommandEditorField import CommandEditorField
 
 
-class LineNumberArea(QWidget):
-    def __init__(self, editor):
-        super().__init__(editor)
-        self.codeEditor = editor
-
-    def sizeHint(self):
-        return QSize(self.codeEditor.lineNumberAreaWidth(), 0)
-
-    def paintEvent(self, event):
-        self.codeEditor.lineNumberAreaPaintEvent(event)
-
-class CommandEditor(QPlainTextEdit):
+class CommandEditor(QWidget):
     def __init__(self):
         super().__init__()
-        self.lineNumberArea = LineNumberArea(self)
-        self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
-        self.updateRequest.connect(self.updateLineNumberArea)
-        self.updateLineNumberAreaWidth(0)
-        self.setFont(QFont("Courier", 11))
 
+        self.values_keys: set[str] = set()
+        self.setWindowTitle("Edytor połączenia")
+        self.setGeometry(100, 100, 300, 350)
+        self.setWindowIcon(QIcon("assets/icon.ico"))
 
+        self.setFixedSize(416, 550)
 
-        self.highlighter = SyntaxHighlighter(self.document())
+        self.main_layout = QVBoxLayout()
 
-    def lineNumberAreaWidth(self):
-        digits = len(str(self.blockCount()))
-        space = 3 + self.fontMetrics().horizontalAdvance('9') * digits
-        return space
+        self.main_layout.setContentsMargins(5, 5, 5, 5)
+        self.main_layout.setSpacing(0)
 
-    def updateLineNumberAreaWidth(self, _):
-        self.setViewportMargins(self.lineNumberAreaWidth() * 2, 0, self.lineNumberAreaWidth(), 0)
+        self.title = QLabel("Edytor poleceń")
+        self.title.setStyleSheet("""
+                    text-align: center;
+                    font-size: 20px;
+                    font-weight: bold;
+                    padding: 0px;
+                    width:100%;
+                    height: 30px;
+                """)
+        self.title.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.title.setFixedHeight(40)
+        self.main_layout.addWidget(self.title)
 
-    def updateLineNumberArea(self, rect, dy):
-        if dy:
-            self.lineNumberArea.scroll(0, dy)
-        else:
-            self.lineNumberArea.update(0, rect.y(), self.lineNumberArea.width(), rect.height())
-        if rect.contains(self.viewport().rect()):
-            self.updateLineNumberAreaWidth(0)
+        self.subtitle = QLabel("Wprowadź lub edytuj dane polecenia.")
+        self.subtitle.setStyleSheet("""
+                            text-align: center;
+                            font-size: 14px;
+                            font-weight: bold;
+                            padding: 0px;
+                            width:100%;
+                            height: 30px;
+                        """)
+        self.subtitle.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.subtitle.setMinimumHeight(45)
+        self.subtitle.setWordWrap(True)
+        self.main_layout.addWidget(self.subtitle)
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        cr = self.contentsRect()
-        self.lineNumberArea.setGeometry(QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
+        self.command_editor_field = CommandEditorField(self.set_set, self.print_set)
+        self.main_layout.addWidget(self.command_editor_field)
 
-    def lineNumberAreaPaintEvent(self, event):
-        painter = QPainter(self.lineNumberArea)
-        #painter.fillRect(event.rect(), Qt.GlobalColor.lightGray)
+        self.detected_keys_label = QLabel()
+        self.detected_keys_label.setWordWrap(True)
+        self.main_layout.addWidget(self.detected_keys_label)
 
-        block = self.firstVisibleBlock()
-        blockNumber = block.blockNumber()
-        top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
-        bottom = top + self.blockBoundingRect(block).height()
+        self.setLayout(self.main_layout)
 
-        while block.isValid() and top <= event.rect().bottom():
-            if block.isVisible() and bottom >= event.rect().top():
-                number = str(blockNumber + 1)
-                painter.setPen(Qt.GlobalColor.white)
-                painter.drawText(0, int(top), self.lineNumberArea.width(), self.fontMetrics().height(),
-                                 Qt.AlignmentFlag.AlignRight, number)
-            block = block.next()
-            top = bottom
-            bottom = top + self.blockBoundingRect(block).height()
-            blockNumber += 1
+    def set_set(self, values_keys: set[str]):
+        self.values_keys = values_keys
+        self.detected_keys_label.setText(f"Wykryte klucze:\t{", ".join(values_keys)}")
+    def print_set(self):
+        print(self.values_keys)
