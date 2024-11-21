@@ -1,6 +1,8 @@
 import os
 import sys
 
+from NetManage.utils.NMCONN_file import read_nmconn
+from NetManage.utils.connections import SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLineEdit, QTextEdit, QPushButton, QGridLayout, \
     QWidget, QMessageBox
@@ -14,7 +16,8 @@ from CurrentConnection import CurrentConnection
 from MenuBar import MenuBar
 from NewConnectionEditor import NewConnectionEditor
 from TerminalView import TerminalView
-from NetManage.utils import read_nmconn, SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
+from utils.consts import CONNECTIONS_DIR, ASSETS_DIR
+
 
 def exception_hook(exctype, value, traceback):
     print("Błąd:", exctype, value)
@@ -28,7 +31,7 @@ class NetManageGUI(QMainWindow):
     grid = None
     connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None = None
 
-    def __init__(self):
+    def __init__(self, file_path = None):
         super().__init__()
         self.connection_editor = None
         self.new_connection_editor = None
@@ -40,10 +43,17 @@ class NetManageGUI(QMainWindow):
         self.initUI()
         self.connectionFile = ""
 
+
+
+        if os.path.exists(f"{CONNECTIONS_DIR}\\temp.nmconn"):
+            os.remove(f"{CONNECTIONS_DIR}\\temp.nmconn")
+
+        print(file_path)
+
     def initUI(self):
         self.central_widget = QWidget(self)
         self.terminal_view = TerminalView()
-        self.command_list = CommandList()
+        self.command_list = CommandList(self)
         self.command_editor = CE()
         self.current_connection = CurrentConnection(self.terminal_view, self)
         self.new_connection_editor = NewConnectionEditor(terminal_view=self.terminal_view, main=self)
@@ -60,16 +70,16 @@ class NetManageGUI(QMainWindow):
         self.connection_changed.connect(lambda conn: self.current_connection.update_connection(conn, self.connectionFile))
         self.connection_changed.connect(menu_bar.toggleActionActivation)
 
-        self.grid.addWidget(self.command_list, 0, 0, 3, 1)
-        self.grid.addWidget(self.command_editor, 0, 1, 2, 2)
-        self.grid.addWidget(self.terminal_view, 2, 1, 1, 2)
-        self.grid.addWidget(self.current_connection, 0, 3, 1, 1)
-        self.grid.addWidget(self.connections_list, 1, 3, 2, 1)
+        self.grid.addWidget(self.command_list, 0, 0, 3, 2)
+        self.grid.addWidget(self.command_editor, 0, 2, 2, 3)
+        self.grid.addWidget(self.terminal_view, 2, 2, 1, 3)
+        self.grid.addWidget(self.current_connection, 0, 6, 1, 2)
+        self.grid.addWidget(self.connections_list, 1, 6, 2, 2)
 
 
-        self.setWindowIcon(QIcon("./assets/icon.ico"))
+        self.setWindowIcon(QIcon(f"{ASSETS_DIR}/icon.ico"))
         self.setWindowTitle('NetManageGUI')
-        self.setGeometry(100, 100, 1000, 750)
+        self.setGeometry(100, 100, 1000, 550)
 
         #self.new_connection()
 
@@ -83,7 +93,7 @@ class NetManageGUI(QMainWindow):
 
         self.connectionFile = connection_file
         try:
-            self.connection = read_nmconn(f"connections\\{connection_file}")
+            self.connection = read_nmconn(f"{CONNECTIONS_DIR}\\{connection_file}")
             print("Połączenie:")
             print(self.connection)
             self.connection_changed.emit(self.connection)
@@ -109,8 +119,8 @@ class NetManageGUI(QMainWindow):
             return
 
 
-        if os.path.exists(f"./connections\\{self.connectionFile}"):
-            os.remove(f"./connections\\{self.connectionFile}")
+        if os.path.exists(f"{CONNECTIONS_DIR}\\{self.connectionFile}"):
+            os.remove(f"{CONNECTIONS_DIR}\\{self.connectionFile}")
             self.connections_list.load_list()
         else:
             print("The file does not exist")
@@ -147,11 +157,13 @@ class NetManageGUI(QMainWindow):
             print("Anulowano.")
             return False
 
-if __name__ == '__main__':
-    if os.path.exists(".\\connections\\temp.nmconn"):
-        os.remove(".\\connections\\temp.nmconn")
+    def refresh_lists(self):
+        self.connections_list.load_list()
+        self.command_list.load_list()
 
+if __name__ == '__main__':
+    file_path = sys.argv[1] if len(sys.argv) > 1 else None
     app = QApplication(sys.argv)
-    window = NetManageGUI()
+    window = NetManageGUI(file_path=file_path)
     window.show()
     sys.exit(app.exec())
