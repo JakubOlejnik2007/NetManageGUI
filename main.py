@@ -93,7 +93,7 @@ class NetManageGUI(QMainWindow):
 
         self.connectionFile = connection_file
         try:
-            self.connection = read_nmconn(f"{CONNECTIONS_DIR}\\{connection_file}")
+            self.connection = read_nmconn(f"{CONNECTIONS_DIR}/{connection_file}")
             print("Połączenie:")
             print(self.connection)
             self.connection_changed.emit(self.connection)
