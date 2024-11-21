@@ -1,5 +1,10 @@
 import os
+import sys
+
+from NetManage.utils.NMCONN_file import read_nmconn
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QSizePolicy, QAbstractItemView
+
+from utils.consts import CONNECTIONS_DIR
 
 
 class ConnectionsList(QWidget):
@@ -23,8 +28,11 @@ class ConnectionsList(QWidget):
 
     def load_list(self):
         self.listWidget.clear()
-        for conn in os.listdir("connections"):
-            self.listWidget.addItem(conn)
+
+        for conn in os.listdir(CONNECTIONS_DIR):
+            connection = read_nmconn(f"{CONNECTIONS_DIR}/{conn}")
+
+            self.listWidget.addItem(f"{connection.NAME}   [{conn}]")
 
     def handle_item_double_clicked(self, item):
-        self.setCurrConnection(item.text())
+        self.setCurrConnection(f"{item.text().split(" ")[-1][1:-1]}")

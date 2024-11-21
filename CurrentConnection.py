@@ -1,9 +1,10 @@
-from NetManage.utils import COM_CONNECTION, SSH_CONNECTION, TELNET_CONNECTION, TFTP_CONNECTION
+from NetManage.utils.connections import COM_CONNECTION, SSH_CONNECTION, TELNET_CONNECTION, TFTP_CONNECTION
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QSizePolicy, QStyle, QMessageBox
 from PyQt6.uic.properties import QtCore
 from PyQt6 import QtCore
 
 from TerminalView import TerminalView
+from utils.consts import CONNECTIONS_DIR
 from utils.detect_success import is_success
 
 
@@ -147,7 +148,7 @@ class CurrentConnection(QWidget):
         print(self.connectionFile)
         self.terminal_view.disconnect_signal()
         self.terminal_view.output_received.connect(self.handle_command_result)
-        self.terminal_view.run_command(f"netmanage test-conn -c \".\\connections\\{self.connectionFile}\"")
+        self.terminal_view.run_command(f"netmanage test-conn -c \"{CONNECTIONS_DIR}\\{self.connectionFile}\"")
 
 
 
