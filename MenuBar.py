@@ -1,4 +1,4 @@
-from NetManage.utils import SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
+from NetManage.utils.connections import SSH_CONNECTION, TELNET_CONNECTION, COM_CONNECTION, TFTP_CONNECTION
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
@@ -24,7 +24,8 @@ class MenuBar(QMenuBar):
 
         refresh = QAction("Odśwież", self)
         refresh.setShortcut("F5")
-        refresh.triggered.connect(connections_list.load_list)
+
+        refresh.triggered.connect(main.refresh_lists)
 
         self.tools_menu.addAction(refresh)
 
