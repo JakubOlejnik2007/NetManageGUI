@@ -14,3 +14,5 @@ BASE_DIR = (
 CONNECTIONS_DIR = os.path.join(BASE_DIR, "connections")
 COMMANDS_DIR = os.path.join(BASE_DIR, "commands")
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+
+SUPPORTED_INPUTS = ["TEXT", "PASS", "PORT", "IPv4", "SUBNET"]

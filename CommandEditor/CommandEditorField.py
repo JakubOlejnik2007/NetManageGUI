@@ -19,7 +19,7 @@ class LineNumberArea(QWidget):
         self.codeEditor.lineNumberAreaPaintEvent(event)
 
 class CommandEditorField(QPlainTextEdit):
-    def __init__(self, set_set, print_set):
+    def __init__(self, set_set, print_set, text: str = None):
         super().__init__()
         self.lineNumberArea = LineNumberArea(self)
         self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
@@ -30,7 +30,8 @@ class CommandEditorField(QPlainTextEdit):
         self.set_set = set_set
         self.print_set = print_set
 
-
+        if text is not None:
+            self.setPlainText(text)
 
         self.highlighter = SyntaxHighlighter(self.document())
 

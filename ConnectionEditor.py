@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout
 from TerminalView import TerminalView
 from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
-from utils.consts import CONNECTIONS_DIR
+from utils.consts import CONNECTIONS_DIR, ASSETS_DIR
 from utils.detect_success import is_success
 from validators.validators import validate_method, validate_string, validate_sshtel_port, validate_ip_list, \
     validate_com_port, validate_baudrate
@@ -20,7 +20,7 @@ class ConnectionEditor(QWidget):
 
         self.setWindowTitle("Edytor połączenia")
         self.setGeometry(100, 100, 300, 200)
-        self.setWindowIcon(QIcon("assets/icon.ico"))
+        self.setWindowIcon(QIcon(f"{ASSETS_DIR}/icon.ico"))
 
 
         self.setFixedSize(416, 550)
