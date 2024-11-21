@@ -1,11 +1,11 @@
-import PyQt6
-from PyQt6 import QtCore
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QLineEdit, QHBoxLayout, QLabel
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QVBoxLayout
-
+from PyQt6 import QtCore
 from inputs.base_input import BaseInput
 from inputs.combo_input import ComboInput
 from utils.comutils import serial_ports
+from utils.consts import SUPPORTED_DEVICES
 from validators.validators import validate_sshtel_port, validate_baudrate, validate_string, validate_ip_list
 
 
@@ -24,13 +24,9 @@ class BaudrateInput(BaseInput):
         return super().validate(validate_method, invalid_message)
 
 class DeviceInput(ComboInput):
-    devices = [
-        'cisco_ios', 'cisco_xe', 'cisco_asa', 'cisco_nxos', 'cisco_iosxr', 'arista_eos', 'juniper',
-        'hp_procurve', 'dell_force10', 'brocade', 'fortinet', 'mikrotik', 'huawei', 'checkpoint', 'paloalto'
-    ]
 
     def __init__(self, device = None):
-        super().__init__("Urządzenie:", self.devices, value = device)
+        super().__init__("Urządzenie:", SUPPORTED_DEVICES, value = device)
 
 class COMPortInput(ComboInput):
     def __init__(self):
@@ -61,18 +57,12 @@ class PasswordInput(BaseInput):
     def validate(self, validate_method=validate_string, invalid_message="Hasło nie może być puste. [Wyjątek - hasło EXEC]"):
         return super().validate(validate_method, invalid_message)
 
-from PyQt6.QtWidgets import QLineEdit, QSizePolicy, QHBoxLayout, QLabel
-from PyQt6.QtGui import QIntValidator
-from PyQt6 import QtCore
-from validators.validators import validate_ip_list
-
-
 class HostInput:
     values = []
-    def __init__(self):
+    def __init__(self, label = "Host:"):
         self.main_layout = QVBoxLayout()
         self.host_layout = QHBoxLayout()
-        self.hostLabel = QLabel("Host:")
+        self.hostLabel = QLabel(label)
         self.hostLabel.setStyleSheet("""
                     margin: 10px;
                     text-align: center;

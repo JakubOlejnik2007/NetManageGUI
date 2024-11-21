@@ -6,9 +6,10 @@ from validators.validators import validate_string
 class BaseInput:
     value = None
     def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit,
-                 max_length=-1, disabled=False):
+                 max_length=-1, disabled=False, invalid_message="Nieprawidłowy ciąg znaków."):
         self.main_layout = QVBoxLayout()
         self.input_layout = QHBoxLayout()
+        self.invalid_message = invalid_message
 
         self.inputLabel = QLabel(label)
         self.inputLabel.setStyleSheet("""
@@ -57,8 +58,11 @@ class BaseInput:
         self.validate()
         return self.value
 
-    def validate(self, validate_method = validate_string, invalid_message = "Nieprawidłowy ciąg znaków."):
+    def validate(self, validate_method = validate_string, invalid_message = None):
         is_valid_value = validate_method(self.value)
+
+        if invalid_message is None:
+            invalid_message = self.invalid_message
 
         if not is_valid_value:
             self.errorLabel.setText(invalid_message)
