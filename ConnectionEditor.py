@@ -199,17 +199,17 @@ class ConnectionEditor(QWidget):
 
         if self.validate_input():
             if self.values[0] == "SSH":
-                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[7]}\" -po {self.values[3]} -u \"{self.values[4]}\" -pa \"{self.values[5]}\" -e \"{self.values[6]}\""
+                command = f"./netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[7]}\" -po {self.values[3]} -u \"{self.values[4]}\" -pa \"{self.values[5]}\" -e \"{self.values[6]}\""
                 print(command)
                 self.terminal_view.run_command(command)
 
             elif self.values[0] == "TELNET":
-                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[6]}\" -po {self.values[3]} -pa \"{self.values[4]}\" -e \"{self.values[5]}\""
+                command = f"./netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -i \"{".".join([str(item) for item in self.values[2]])}\" -m \"{self.values[0]}\" -d \"{self.values[6]}\" -po {self.values[3]} -pa \"{self.values[4]}\" -e \"{self.values[5]}\""
                 print(command)
                 self.terminal_view.run_command(command)
 
             elif self.values[0] == "COM":
-                command = f"netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -m \"{self.values[0]}\" -d \"{self.values[5]}\" -po \"{self.values[2]}\" -b \"{self.values[3]}\" -e \"{self.values[4]}\""
+                command = f"./netmanage create-conn -n=\"{self.values[1]}\" -o \"{CONNECTIONS_DIR}/{self.values[1].lower().replace(" ","_")}.nmconn\" -m \"{self.values[0]}\" -d \"{self.values[5]}\" -po \"{self.values[2]}\" -b \"{self.values[3]}\" -e \"{self.values[4]}\""
                 print(command)
                 self.terminal_view.run_command(command)
 
