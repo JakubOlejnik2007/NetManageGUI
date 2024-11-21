@@ -60,6 +60,16 @@ class MenuBar(QMenuBar):
         self.connection_menu.addAction(self.close_connection)
         self.connection_menu.addAction(self.delete_connection)
 
+        self.command_menu = self.addMenu('Polecenia')
+
+        self.open_new_command = QAction('Nowe polecenie')
+        self.open_new_command.triggered.connect(main.open_command_editor)
+
+
+        self.command_menu.addAction(self.open_new_command)
+
+
+
     def toggleActionActivation(self, connection: SSH_CONNECTION | TELNET_CONNECTION | COM_CONNECTION | TFTP_CONNECTION | None):
         enabled = False
         if connection is not None:
