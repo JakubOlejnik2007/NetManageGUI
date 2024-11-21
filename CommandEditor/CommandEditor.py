@@ -24,8 +24,8 @@ class CommandEditor(QPlainTextEdit):
         self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.updateLineNumberAreaWidth(0)
-        #self.setFont(QFont("Courier", 10))
-        self.setFont(QFont('Arial', 10))
+        self.setFont(QFont("Courier", 11))
+
 
 
         self.highlighter = SyntaxHighlighter(self.document())
