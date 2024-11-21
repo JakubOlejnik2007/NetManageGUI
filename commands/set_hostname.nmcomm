@@ -1,0 +1,19 @@
+-- META
+NAME: SET HOSTNAME
+TYPE: CONFIG
+-- COMMANDS
+hostname {hostname}
+-- DEVICES
+cisco_ios
+cisco_xe
+cisco_asa
+cisco_nxos
+cisco_iosxr
+arista_eos
+juniper
+hp_procurve
+dell_force10
+brocade
+huawei
+-- INPUTS
+TEXT;hostname;Nazwa hosta:

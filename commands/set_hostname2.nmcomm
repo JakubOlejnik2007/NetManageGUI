@@ -1,0 +1,14 @@
+-- META
+NAME: test 23
+TYPE: DIAGNOSTICS
+-- COMMANDS
+hostname {hostname}
+-- DEVICES
+arista_eos
+juniper
+hp_procurve
+dell_force10
+brocade
+huawei
+-- INPUTS
+TEXT;hostname;Nazwa hosta:
