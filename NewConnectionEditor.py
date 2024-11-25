@@ -22,7 +22,7 @@ class NewConnectionEditor(QWidget):
         self.setWindowIcon(QIcon("assets/icon.ico"))
 
 
-        self.setFixedSize(416, 550)
+        self.setFixedSize(416, 600)
 
         self.terminal_view = terminal_view
 
