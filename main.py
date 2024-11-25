@@ -55,7 +55,7 @@ class NetManageGUI(QMainWindow):
         self.terminal_view = TerminalView()
         self.command_list = CommandList(self)
         self.current_connection = CurrentConnection(self.terminal_view, self)
-        self.connections_list = ConnectionsList(self.set_connection)
+        self.connections_list = ConnectionsList(self)
 
 
 

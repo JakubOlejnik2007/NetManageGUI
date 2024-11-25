@@ -8,9 +8,9 @@ from utils.consts import CONNECTIONS_DIR
 
 
 class ConnectionsList(QWidget):
-    def __init__(self, setCurrConnection):
+    def __init__(self, main_window):
         super().__init__()
-        self.setCurrConnection = setCurrConnection
+        self.main_window = main_window
 
         self.listWidget = QListWidget(self)
         self.listWidget.itemDoubleClicked.connect(self.handle_item_double_clicked)
@@ -35,4 +35,5 @@ class ConnectionsList(QWidget):
             self.listWidget.addItem(f"{connection.NAME}   [{conn}]")
 
     def handle_item_double_clicked(self, item):
-        self.setCurrConnection(f"{item.text().split(" ")[-1][1:-1]}")
+        self.main_window.set_connection(f"{item.text().split(" ")[-1][1:-1]}")
+        self.main_window.refresh_lists()
