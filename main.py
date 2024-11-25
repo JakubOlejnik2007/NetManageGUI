@@ -66,7 +66,7 @@ class NetManageGUI(QMainWindow):
         self.grid = QGridLayout(self.central_widget)
 
         self.connection_changed.connect(lambda conn: self.current_connection.update_connection(conn, self.connectionFile))
-        self.connection_changed.connect(menu_bar.toggleActionActivation)
+        self.connection_changed.connect(menu_bar.toggleActionActivationConnection)
 
         self.grid.addWidget(self.command_list, 0, 0, 3, 2)
         #self.grid.addWidget(self.command_editor, 0, 2, 2, 3)
