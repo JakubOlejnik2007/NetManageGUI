@@ -8,6 +8,7 @@ from CommandEditor.CommandEditorField import CommandEditorField
 from inputs.base_input import BaseInput
 from inputs.combo_input import ComboInput
 from inputs.inputs import ConnnameInput
+from utils.AnimatedToggle import AnimatedToggle
 from utils.consts import SUPPORTED_INPUTS, ASSETS_DIR
 
 
@@ -146,6 +147,27 @@ class CommandEditor(QWidget):
         self.subtitle.setMinimumHeight(45)
         self.subtitle.setWordWrap(True)
         self.main_layout.addWidget(self.subtitle)
+
+        self.mode_layout = QHBoxLayout()
+        self.mode_layout.setContentsMargins(5, 5, 5, 5)
+
+        label1 = QLabel("DIAGNOSTICS")
+        label2 = QLabel("CONFIG")
+
+        style = "margin:10px;font-weight: bold;"
+
+        label1.setStyleSheet(style)
+        label2.setStyleSheet(style)
+
+        self.toggle_mode = AnimatedToggle()
+
+        self.mode_layout.addStretch()
+        self.mode_layout.addWidget(label1)
+        self.mode_layout.addWidget(self.toggle_mode)
+        self.mode_layout.addWidget(label2)
+        self.mode_layout.addStretch()
+
+        self.main_layout.addLayout(self.mode_layout)
 
         self.command_editor_field = CommandEditorField(self.set_set, self.print_set)
         self.main_layout.addWidget(self.command_editor_field)
