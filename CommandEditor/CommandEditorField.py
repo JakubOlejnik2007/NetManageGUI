@@ -26,6 +26,7 @@ class CommandEditorField(QPlainTextEdit):
         self.updateRequest.connect(self.updateLineNumberArea)
         self.updateLineNumberAreaWidth(0)
         self.setFont(QFont("Courier", 11))
+        self.setFixedHeight(160)
 
         self.set_set = set_set
         self.print_set = print_set
