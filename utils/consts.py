@@ -16,3 +16,20 @@ COMMANDS_DIR = os.path.join(BASE_DIR, "commands")
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 
 SUPPORTED_INPUTS = ["TEXT", "PASS", "PORT", "IPv4", "SUBNET"]
+
+SHORTCUTS = {
+    "CONNECTION": {
+        "NEW": "CTRL+ALT+N",
+        "TEST": "CTRL+ALT+T",
+        "EDIT": "CTRL+ALT+E",
+        "DELETE": "CTRL+ALT+W",
+        "CLOSE": "CTRL+ALT+C",
+    },
+    "COMMAND": {
+        "NEW": "CTRL+SHIFT+N",
+        "EDIT": "CTRL+SHIFT+E",
+        "DELETE": "CTRL+SHIFT+W",
+        "CLOSE": "CTRL+SHIFT+C",
+        "RUN": "CTRL+SHIFT+R",
+    }
+}
