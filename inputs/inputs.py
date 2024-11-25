@@ -6,7 +6,8 @@ from inputs.base_input import BaseInput
 from inputs.combo_input import ComboInput
 from utils.comutils import serial_ports
 from utils.consts import SUPPORTED_DEVICES
-from validators.validators import validate_sshtel_port, validate_baudrate, validate_string, validate_ip_list
+from validators.validators import validate_sshtel_port, validate_baudrate, validate_string, validate_ip_list, \
+    validate_subnet_list
 
 
 class PortInput(BaseInput):
@@ -129,3 +130,9 @@ class HostInput:
             self.error_label.setVisible(False)
         return is_valid
 
+class SubnetInput(HostInput):
+    def __init__(self, label = "Maska:"):
+        super().__init__(label)
+
+    def validate(self, validate_method=validate_subnet_list, invalid_message="Nieprawidłowy adres IPv4"):
+        super().validate(validate_method, invalid_message)

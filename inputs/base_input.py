@@ -5,15 +5,21 @@ from validators.validators import validate_string
 
 class BaseInput:
     value = None
-    def __init__(self, label, default_value=None, validator=None, hide_input=False, input_type=QLineEdit,
-                 max_length=-1, disabled=False, invalid_message="Nieprawidłowy ciąg znaków."):
+    def __init__(self, label, default_value=None, validator=None, hide_input=False,
+                 max_length=-1, disabled=False, invalid_message="Nieprawidłowy ciąg znaków.", silent_invalid=False):
         self.main_layout = QVBoxLayout()
         self.input_layout = QHBoxLayout()
         self.invalid_message = invalid_message
+        self.silent_invalid = silent_invalid
+
+        self.input = QLineEdit()
+
+        self.main_layout.setContentsMargins(0,15,15,15)
 
         self.inputLabel = QLabel(label)
         self.inputLabel.setStyleSheet("""
                     margin: 10px;
+                    margin-left: 5px;
                     text-align: center;
                     font-size: 12px;
                     font-weight: bold;
@@ -22,18 +28,16 @@ class BaseInput:
                 """)
         self.input_layout.addWidget(self.inputLabel)
 
-        self.input = input_type()
-        if isinstance(self.input, QLineEdit):
-            if max_length > -1:
-                self.input.setMaxLength(max_length)
-            if default_value:
-                self.input.setText(default_value)
-            if validator:
-                self.input.setValidator(validator)
-            if hide_input:
-                self.input.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
-            self.input.setMinimumWidth(150)
-            self.input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        if max_length > -1:
+            self.input.setMaxLength(max_length)
+        if default_value:
+            self.input.setText(default_value)
+        if validator:
+            self.input.setValidator(validator)
+        if hide_input:
+            self.input.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
+        self.input.setMinimumWidth(115)
+        self.input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         if disabled:
             self.input.setDisabled(True)
@@ -64,7 +68,7 @@ class BaseInput:
         if invalid_message is None:
             invalid_message = self.invalid_message
 
-        if not is_valid_value:
+        if not is_valid_value and not self.silent_invalid:
             self.errorLabel.setText(invalid_message)
             self.errorLabel.setVisible(True)
         else:

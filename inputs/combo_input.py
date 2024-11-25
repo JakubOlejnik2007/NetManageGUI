@@ -16,7 +16,7 @@ class ComboInput:
         self.combo = QComboBox()
         self.combo.addItems(items)
         self.combo.setDisabled((len(items) == 0 or items[0] == "No COM port available.") and disabled_if_empty)
-        self.combo.setStyleSheet("width: 30%;")
+        self.combo.setMinimumWidth(115)
         if value is not None:
             self.combo.setCurrentText(value)
         self.combo_layout.addWidget(self.comboLabel)

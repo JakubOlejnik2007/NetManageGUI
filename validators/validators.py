@@ -4,6 +4,14 @@ def validate_ip_list(ip: list[int]) -> bool:
             return False
     return True
 
+def validate_subnet_list(subnet: list[int]) -> bool:
+    for idx, octet in enumerate(subnet):
+        if not 0 <= octet <= 255:
+            return False
+        if idx > 0 and subnet[idx] > subnet[idx - 1]:
+            return False
+    return True
+
 def validate_method(method: str) -> bool:
     available_methods = ["SSH", "COM", "TELNET", "TFTP"]
     return method in available_methods
