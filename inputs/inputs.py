@@ -5,7 +5,7 @@ from PyQt6 import QtCore
 from inputs.base_input import BaseInput
 from inputs.combo_input import ComboInput
 from utils.comutils import serial_ports
-from utils.consts import SUPPORTED_DEVICES
+from utils.consts import SUPPORTED_DEVICES, COMMANDS_DIR, CONNECTIONS_DIR
 from validators.validators import validate_sshtel_port, validate_baudrate, validate_string, validate_ip_list, \
     validate_subnet_list
 
@@ -44,10 +44,15 @@ class UsernameInput(BaseInput):
 
 
 class NameInput(BaseInput):
-    def __init__(self, disabled=False, label = "Nazwa połączenia:"):
+    def __init__(self, disabled=False, is_command_name = False):
+        self.isCommand = is_command_name
+        label = "Nazwa połączenia:" if not self.isCommand else "Nazwa polecenia:"
         super().__init__(label, disabled=disabled)
 
-    def validate(self, validate_method=validate_string, invalid_message="Nazwa połączenia nie może być pusta. [Wyjątek - połączenie temp]"):
+    def validate(self, validate_method=validate_string, invalid_message="Nazwa nie może być pusta."):
+        if not self.isCommand:
+            invalid_message = f"{invalid_message} Wyjątek - połączenia TEMP."
+
         return super().validate(validate_method, invalid_message)
 
 
