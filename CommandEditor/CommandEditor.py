@@ -2,12 +2,13 @@ from NetManage.utils.commands import COMMAND, INPUT
 from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QGridLayout, QScrollArea, QFrame, QHBoxLayout
+from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QGridLayout, QScrollArea, QFrame, QHBoxLayout, QPushButton, \
+    QStyle
 
 from CommandEditor.CommandEditorField import CommandEditorField
 from inputs.base_input import BaseInput
 from inputs.combo_input import ComboInput
-from inputs.inputs import ConnnameInput
+from inputs.inputs import NameInput
 from utils.AnimatedToggle import AnimatedToggle
 from utils.consts import SUPPORTED_INPUTS, ASSETS_DIR
 
@@ -148,6 +149,10 @@ class CommandEditor(QWidget):
         self.subtitle.setWordWrap(True)
         self.main_layout.addWidget(self.subtitle)
 
+        self.command_name = NameInput(is_command_name=True)
+
+        self.main_layout.addLayout(self.command_name.getLayout())
+
         self.mode_layout = QHBoxLayout()
         self.mode_layout.setContentsMargins(5, 5, 5, 5)
 
@@ -187,6 +192,31 @@ class CommandEditor(QWidget):
 
         self.scroll_area.setWidget(self.controls_widget)
 
+        self.buttons = QHBoxLayout()
+
+        self.close_editor = QPushButton("Zamknij")
+        self.close_editor.setIcon(
+            self.close_editor.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
+        self.close_editor.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.close_editor.clicked.connect(self.handle_close)\
+
+        self.save_command = QPushButton("Zapisz")
+        self.save_command.setIcon(
+            self.save_command.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
+        self.save_command.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.save_command.clicked.connect(self.handle_close)
+
+        self.save_and_run_command = QPushButton("Zapisz i uruchom")
+        self.save_and_run_command.setIcon(
+            self.save_and_run_command.style().standardIcon(QStyle.StandardPixmap.SP_ArrowForward))
+        self.save_and_run_command.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.save_and_run_command.clicked.connect(self.handle_close)
+
+        self.buttons.addWidget(self.close_editor)
+        self.buttons.addWidget(self.save_command)
+        self.buttons.addWidget(self.save_and_run_command)
+
+        self.main_layout.addLayout(self.buttons)
     def set_set(self, values_keys: set[str]):
         self.values_keys = values_keys
 
@@ -227,3 +257,6 @@ class CommandEditor(QWidget):
 
     def print_set(self):
         print(self.values_keys)
+
+    def handle_close(self):
+        self.close()
