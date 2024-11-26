@@ -43,9 +43,9 @@ class UsernameInput(BaseInput):
         return super().validate(validate_method, invalid_message)
 
 
-class ConnnameInput(BaseInput):
-    def __init__(self, disabled=False):
-        super().__init__("Nazwa połączenia:", disabled=disabled)
+class NameInput(BaseInput):
+    def __init__(self, disabled=False, label = "Nazwa połączenia:"):
+        super().__init__(label, disabled=disabled)
 
     def validate(self, validate_method=validate_string, invalid_message="Nazwa połączenia nie może być pusta. [Wyjątek - połączenie temp]"):
         return super().validate(validate_method, invalid_message)

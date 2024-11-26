@@ -4,7 +4,7 @@ from PyQt6.QtGui import QIntValidator, QIcon
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QHBoxLayout, QPushButton, QStyle
 
 from TerminalView import TerminalView
-from inputs.inputs import ConnnameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
+from inputs.inputs import NameInput, HostInput, PortInput, UsernameInput, PasswordInput, DeviceInput, BaudrateInput, \
     COMPortInput
 from utils.consts import CONNECTIONS_DIR, ASSETS_DIR
 from utils.detect_success import is_success
@@ -139,7 +139,7 @@ class ConnectionEditor(QWidget):
 
     def show_ssh_controls(self):
         self.controls = [
-            ConnnameInput(disabled=True), HostInput(), PortInput("Port SSH:", QIntValidator(0, 65535)), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
+            NameInput(disabled=True), HostInput(), PortInput("Port SSH:", QIntValidator(0, 65535)), UsernameInput(), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
         ]
 
         print("Połączenie", self.connection)
@@ -158,7 +158,7 @@ class ConnectionEditor(QWidget):
 
     def show_telnet_controls(self):
         self.controls = [
-            ConnnameInput(disabled=True), HostInput(), PortInput("Port TELNET:", QIntValidator(0, 65535), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
+            NameInput(disabled=True), HostInput(), PortInput("Port TELNET:", QIntValidator(0, 65535), is_telnet=True), PasswordInput("Hasło:"), PasswordInput("EXEC:"), DeviceInput(device=self.connection.DEVICE)
         ]
 
         self.controls[0].setValue(self.connection.NAME)
@@ -175,7 +175,7 @@ class ConnectionEditor(QWidget):
 
     def show_com_controls(self):
         self.controls = [
-            ConnnameInput(), COMPortInput(), BaudrateInput(), PasswordInput("EXEC:"), DeviceInput()
+            NameInput(), COMPortInput(), BaudrateInput(), PasswordInput("EXEC:"), DeviceInput()
         ]
         for control in self.controls:
             self.controls_layout.addLayout(control.getLayout())
