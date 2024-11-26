@@ -22,7 +22,7 @@ class NewConnectionEditor(QWidget):
         self.setWindowIcon(QIcon("assets/icon.ico"))
 
 
-        self.setFixedSize(416, 600)
+        self.setFixedSize(416, 550)
 
         self.terminal_view = terminal_view
 
@@ -160,6 +160,7 @@ class NewConnectionEditor(QWidget):
                 self.clear_layout(child.layout())
 
     def save_connection_handler(self, temp = False):
+        print(self.size())
         self.get_values()
         self.terminal_view.disconnect_signal()
         self.terminal_view.output_received.connect(self.handle_command_result)
@@ -187,6 +188,7 @@ class NewConnectionEditor(QWidget):
         else:
             pass
 
+        print(self.size())
 
     def get_values(self):
         self.values = [control.getValue() for control in self.controls]

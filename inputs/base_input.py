@@ -14,11 +14,10 @@ class BaseInput:
 
         self.input = QLineEdit()
 
-        self.main_layout.setContentsMargins(0,15,15,15)
+        self.main_layout.setContentsMargins(5,5,5,5)
 
         self.inputLabel = QLabel(label)
         self.inputLabel.setStyleSheet("""
-                    margin: 10px;
                     margin-left: 5px;
                     text-align: center;
                     font-size: 12px;
