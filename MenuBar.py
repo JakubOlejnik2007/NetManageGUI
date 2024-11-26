@@ -101,7 +101,7 @@ class MenuBar(QMenuBar):
         self.close_connection.setEnabled(enabled)
         self.delete_connection.setEnabled(enabled)
 
-    def toggleActionActivationConnection(self, command_file: str | None):
+    def toggleActionActivationCommand(self, command_file: str | None):
         enabled = False
         if command_file is not None:
             enabled = True
