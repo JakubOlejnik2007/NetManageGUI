@@ -137,7 +137,7 @@ class NetManageGUI(QMainWindow):
         self.new_connection_editor.show()
 
     def open_command_editor(self):
-        self.command_editor = CE()
+        self.command_editor = CE(self.terminal_view, self)
         self.command_editor.show()
 
     def confirm_message_box(self, title: str, message: str, yes_button_mess: str = "Tak",

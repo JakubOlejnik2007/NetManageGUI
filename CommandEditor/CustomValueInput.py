@@ -41,7 +41,7 @@ class CustomValueInput(INPUT):
         self.type = new_type
 
     def get_values(self) -> tuple:
-        return self.id_input.getValue(), self.label_input.getValue(), self.input_combo.getValue()
+        return self.input_combo.getValue(), self.id_input.getValue(), self.label_input.getValue()
 
     def return_layout(self) -> QGridLayout:
         self.create_layout()

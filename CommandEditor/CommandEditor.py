@@ -3,15 +3,16 @@ from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QPushButton, \
     QStyle
+
 from CommandEditor.CommandEditorField import CommandEditorField
 from CommandEditor.CustomValueInput import CustomValueInput
+from CommandEditor.DeviceSelectionDialog import DeviceSelectionDialog
+from TerminalView import TerminalView
 from inputs.inputs import NameInput
 from utils.AnimatedToggle import AnimatedToggle
 from utils.CenteredLineWidget import CenteredLineWidget
-from utils.consts import ASSETS_DIR
-
-
-
+from utils.consts import ASSETS_DIR, COMMANDS_DIR
+from utils.detect_success import is_success
 
 input11 = INPUT()
 input11.read("TEXT;hostname;Nazwa hosta:")
@@ -33,9 +34,11 @@ command1 = COMMAND(
 
 
 class CommandEditor(QWidget):
-    def __init__(self, command: COMMAND = None):
+    def __init__(self, terminal_view: TerminalView, main, command: COMMAND = None):
         super().__init__()
-
+        self.main = main
+        self.selected_devices = []
+        self.terminal_view = terminal_view
         self.command = command
         self.values_keys: set[str] = set()
         self.list_of_inputs: list[CustomValueInput] = []
@@ -120,11 +123,18 @@ class CommandEditor(QWidget):
 
         self.scroll_area.setWidget(self.controls_widget)
 
-        self.errorLabel = QLabel("Etykiety własnych kontrolek nie mogą być puste oraz nie mogą zawierac znaku \";\".")
+        self.errorLabel = QLabel()
         self.errorLabel.setWordWrap(True)
         self.errorLabel.setStyleSheet("color: red; font-size: 12px;")
         self.errorLabel.setVisible(False)
         self.main_layout.addWidget(self.errorLabel)
+
+        self.device_button = QPushButton("Wybierz urządzenia")
+        self.device_button.clicked.connect(self.open_device_dialog)
+        self.main_layout.addWidget(self.device_button)
+        self.device_label = QLabel("Wybrane urządzenia: ")
+        self.device_label.setWordWrap(True)
+        self.main_layout.addWidget(self.device_label)
 
         self.buttons = QHBoxLayout()
 
@@ -153,6 +163,18 @@ class CommandEditor(QWidget):
         self.main_layout.addLayout(self.buttons)
 
 
+
+    def open_device_dialog(self):
+        self.device_dialog = DeviceSelectionDialog(self.selected_devices)
+        self.device_dialog.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
+        self.device_dialog.show()
+        self.device_dialog.finished.connect(self.update_selected_devices)
+
+    def update_selected_devices(self):
+        self.selected_devices = self.device_dialog.selected_devices
+        selected_devices_string = f"Wybrane urządzenia: {", ".join(self.selected_devices)}"
+        print(selected_devices_string)
+        self.device_label.setText(selected_devices_string)
 
     def set_set(self, values_keys: set[str]):
         self.values_keys = values_keys
@@ -200,32 +222,59 @@ class CommandEditor(QWidget):
 
     def validate_custom_inputs(self):
         for input in self.list_of_inputs:
-            _, label, _ = input.get_values()
+            _, _, label = input.get_values()
             if len(label) == 0:
+                self.errorLabel.setText("Etykiety własnych kontrolek nie mogą być puste oraz nie mogą zawierac znaku \";\". ")
                 self.errorLabel.setVisible(True)
                 return False
-        self.errorLabel.setVisible(False)
         return True
 
     def get_values(self) -> dict:
+        self.errorLabel.setVisible(False)
+        self.errorLabel.setText("")
         is_valid = self.validate_custom_inputs()
         command_name = self.command_name.getValue()
         self.command_name.validate()
         if not is_valid:
             return {}
 
+        if len(self.selected_devices) == 0:
+            self.errorLabel.setVisible(True)
+            self.errorLabel.setText("Należy wybrać przynajmniej jedno urządzenie.")
+            return {}
+
+        if len(self.command_editor_field.toPlainText()) == 0:
+            self.errorLabel.setText("Treść polecenia nie może być pusta.")
+            self.errorLabel.setVisible(True)
 
         values = {
             "NAME": command_name,
             "TYPE": "CONFIG" if self.toggle_mode.isChecked else "DIAGNOSTICS",
             "INPUTS": [";".join(control_details.get_values()) for control_details in self.list_of_inputs],
-            "COMMANDS": self.command_editor_field.toPlainText()
+            "COMMANDS": self.command_editor_field.toPlainText(),
+            "DEVICES": self.selected_devices,
         }
 
         return values
+
+    def handle_save_command_result(self, result):
+        if is_success(result):
+            self.main.connections_list.load_list()
+        self.handle_close()
 
     def save_command(self):
         values = self.get_values()
         print(values)
         if values.get("TYPE") is None:
             print("Stop")
+
+
+        self.terminal_view.disconnect_signal()
+        self.terminal_view.output_received.connect(self.handle_save_command_result)
+
+        command = f"./netmanage create-comm -n=\"{values["NAME"]}\" -o \"{COMMANDS_DIR}/{values["NAME"].lower().replace(" ", "_")}.nmcomm\" -t \"{values["TYPE"]}\" -c \"{values["COMMANDS"]}\" -d \"{"\n".join(values["DEVICES"])}\" -i \"{"\n".join(values["INPUTS"])}\""
+        print(command)
+        self.terminal_view.run_command(command)
+
+
+
