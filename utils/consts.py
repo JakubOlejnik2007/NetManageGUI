@@ -6,6 +6,20 @@ SUPPORTED_DEVICES = [
     'hp_procurve', 'dell_force10', 'brocade', 'fortinet', 'mikrotik', 'huawei', 'checkpoint', 'paloalto'
 ]
 
+DEVICE_GROUPS = {
+            "Cisco": ['cisco_ios', 'cisco_xe', 'cisco_asa', 'cisco_nxos', 'cisco_iosxr'],
+            "Arista": ['arista_eos'],
+            "Juniper": ['juniper'],
+            "HP": ['hp_procurve'],
+            "Dell": ['dell_force10'],
+            "Brocade": ['brocade'],
+            "Fortinet": ['fortinet'],
+            "Mikrotik": ['mikrotik'],
+            "Huawei": ['huawei'],
+            "Checkpoint": ['checkpoint'],
+            "PaloAlto": ['paloalto']
+        }
+
 BASE_DIR = (
     os.path.dirname(os.path.dirname(sys.executable))
     if hasattr(sys, "frozen")
