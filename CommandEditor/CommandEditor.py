@@ -4,8 +4,10 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QPushButton, \
     QStyle
 from CommandEditor.CommandEditorField import CommandEditorField
+from CommandEditor.CustomValueInput import CustomValueInput
 from inputs.inputs import NameInput
 from utils.AnimatedToggle import AnimatedToggle
+from utils.CenteredLineWidget import CenteredLineWidget
 from utils.consts import ASSETS_DIR
 
 
@@ -36,7 +38,7 @@ class CommandEditor(QWidget):
 
         self.command = command
         self.values_keys: set[str] = set()
-        self.list_of_inputs = []
+        self.list_of_inputs: list[CustomValueInput] = []
 
         self.setWindowTitle("Edytor poleceń")
         self.setWindowIcon(QIcon(f"{ASSETS_DIR}/icon.ico"))
@@ -118,31 +120,40 @@ class CommandEditor(QWidget):
 
         self.scroll_area.setWidget(self.controls_widget)
 
+        self.errorLabel = QLabel("Etykiety własnych kontrolek nie mogą być puste oraz nie mogą zawierac znaku \";\".")
+        self.errorLabel.setWordWrap(True)
+        self.errorLabel.setStyleSheet("color: red; font-size: 12px;")
+        self.errorLabel.setVisible(False)
+        self.main_layout.addWidget(self.errorLabel)
+
         self.buttons = QHBoxLayout()
 
-        self.close_editor = QPushButton("Zamknij")
-        self.close_editor.setIcon(
-            self.close_editor.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
-        self.close_editor.setStyleSheet("margin-top:10px; padding: 5px;")
-        self.close_editor.clicked.connect(self.handle_close)\
+        self.close_editor_button = QPushButton("Zamknij")
+        self.close_editor_button.setIcon(
+            self.close_editor_button.style().standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
+        self.close_editor_button.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.close_editor_button.clicked.connect(self.handle_close)\
 
-        self.save_command = QPushButton("Zapisz")
-        self.save_command.setIcon(
-            self.save_command.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
-        self.save_command.setStyleSheet("margin-top:10px; padding: 5px;")
-        self.save_command.clicked.connect(self.handle_close)
+        self.save_command_button = QPushButton("Zapisz")
+        self.save_command_button.setIcon(
+            self.save_command_button.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
+        self.save_command_button.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.save_command_button.clicked.connect(self.save_command)
 
-        self.save_and_run_command = QPushButton("Zapisz i uruchom")
-        self.save_and_run_command.setIcon(
-            self.save_and_run_command.style().standardIcon(QStyle.StandardPixmap.SP_ArrowForward))
-        self.save_and_run_command.setStyleSheet("margin-top:10px; padding: 5px;")
-        self.save_and_run_command.clicked.connect(self.handle_close)
+        self.save_and_run_command_button = QPushButton("Zapisz i uruchom")
+        self.save_and_run_command_button.setIcon(
+            self.save_and_run_command_button.style().standardIcon(QStyle.StandardPixmap.SP_ArrowForward))
+        self.save_and_run_command_button.setStyleSheet("margin-top:10px; padding: 5px;")
+        self.save_and_run_command_button.clicked.connect(self.handle_close)
 
-        self.buttons.addWidget(self.close_editor)
-        self.buttons.addWidget(self.save_command)
-        self.buttons.addWidget(self.save_and_run_command)
+        self.buttons.addWidget(self.close_editor_button)
+        self.buttons.addWidget(self.save_command_button)
+        self.buttons.addWidget(self.save_and_run_command_button)
 
         self.main_layout.addLayout(self.buttons)
+
+
+
     def set_set(self, values_keys: set[str]):
         self.values_keys = values_keys
 
@@ -186,3 +197,35 @@ class CommandEditor(QWidget):
 
     def handle_close(self):
         self.close()
+
+    def validate_custom_inputs(self):
+        for input in self.list_of_inputs:
+            _, label, _ = input.get_values()
+            if len(label) == 0:
+                self.errorLabel.setVisible(True)
+                return False
+        self.errorLabel.setVisible(False)
+        return True
+
+    def get_values(self) -> dict:
+        is_valid = self.validate_custom_inputs()
+        command_name = self.command_name.getValue()
+        self.command_name.validate()
+        if not is_valid:
+            return {}
+
+
+        values = {
+            "NAME": command_name,
+            "TYPE": "CONFIG" if self.toggle_mode.isChecked else "DIAGNOSTICS",
+            "INPUTS": [";".join(control_details.get_values()) for control_details in self.list_of_inputs],
+            "COMMANDS": self.command_editor_field.toPlainText()
+        }
+
+        return values
+
+    def save_command(self):
+        values = self.get_values()
+        print(values)
+        if values.get("TYPE") is None:
+            print("Stop")
